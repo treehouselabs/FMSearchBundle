@@ -1,0 +1,26 @@
+{
+    "name": "fm/search-bundle",
+    "type": "symfony-bundle",
+    "description": "Search integration for Symfony2 project, using Solr as search engine and Solarium as API.",
+    "keywords": ["search", "solr", "solarium"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "pkruithof",
+            "email": "peter@financial-media.nl"
+        },
+        {
+            "name": "fieg",
+            "email": "jeroen@financial-media.nl"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "symfony/symfony": "2.2.*",
+        "solarium/solarium": "3.0.*",
+        "pk/command-extra-bundle": "dev-master"
+    },
+    "autoload": {
+        "psr-0": { "FM": "src/" }
+    }
+}

@@ -1,0 +1,66 @@
+parameters:
+    fm_search.schema.mapping.file_driver.class: FM\SearchBundle\Factory\Driver\FileDriver
+
+services:
+    # registry
+    fm_search.registry:
+        class: FM\SearchBundle\Mapping\Registry
+
+    # factories and builders
+    fm_search.schema_builder:
+        class: FM\SearchBundle\Factory\SchemaBuilder
+        arguments: [@annotation_reader, @fm_search.registry]
+    fm_search.schema_factory:
+        class: FM\SearchBundle\Factory\SchemaFactory
+        arguments: [~, @fm_search.schema_builder]
+    fm_search.search_factory:
+        class: FM\SearchBundle\Search\SearchFactory
+        arguments: [@fm_search.registry]
+
+    # document manager
+    fm_search.document_manager:
+        class: FM\SearchBundle\DocumentManager
+        arguments: [@fm_search.client, @fm_search.schema_factory, @fm_search.search_factory, @logger]
+
+    # events
+    fm_search.event.listener.index:
+        class: FM\SearchBundle\Event\Listener\IndexListener
+        arguments: [@fm_search.document_manager]
+        tags:
+            - { name: doctrine.event_listener, event: postPersist }
+            - { name: doctrine.event_listener, event: postUpdate }
+            - { name: doctrine.event_listener, event: preRemove }
+            - { name: kernel.event_listener,   event: kernel.terminate }
+            # TODO when console.terminate becomes available, add an event for that also
+            # see: https://github.com/symfony/symfony/pull/3889
+
+    # form stuff
+    fm_search.form_factory:
+        class: FM\SearchBundle\Form\FormFactory
+        arguments: [@form.factory]
+    fm_search.form.type.faceted_choice:
+        class: FM\SearchBundle\Form\Type\FacetedChoiceType
+        tags:
+            - { name: form.type, alias: faceted_choice }
+    fm_search.form.type.range:
+        class: FM\SearchBundle\Form\Type\RangeType
+        tags:
+            - { name: form.type, alias: range }
+
+    # logging and debugging
+    fm_search.logger:
+        class: FM\SearchBundle\Plugin\Logger
+        calls:
+            - ['setLogger', [@logger]]
+        tags:
+            - { name: monolog.logger, channel: solr }
+    fm_search.data_collector:
+        class: FM\SearchBundle\DataCollector\SolariumDataCollector
+        tags:
+            - { name: data_collector, template: FMSearchBundle:DataCollector:solarium, id: solr }
+
+    # twig
+    fm_search.twig.extension.search:
+        class: FM\SearchBundle\Twig\SearchExtension
+        tags:
+            - { name: twig.extension }

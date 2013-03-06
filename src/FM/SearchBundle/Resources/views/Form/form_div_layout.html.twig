@@ -1,0 +1,56 @@
+{% extends 'form_div_layout.html.twig' %}
+
+{% block range_widget %}
+{% spaceless %}
+  <div {{ block('widget_container_attributes') }}>
+    {{ form_widget(form.start) }}
+    {{ form_widget(form.end) }}
+  </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block faceted_choice_widget %}
+{% spaceless %}
+  {% if expanded %}
+    {{ block('faceted_choice_widget_expanded') }}
+  {% else %}
+    {% set label = '%s (%s)'|format(label, count) %}
+    {{ block('choice_widget_collapsed') }}
+  {% endif %}
+{% endspaceless %}
+{% endblock %}
+
+{% block faceted_choice_widget_expanded %}
+{% spaceless %}
+  <div {{ block('widget_container_attributes') }}>
+  {% for index, child in form %}
+    {{ form_widget(child) }}
+    {{ form_label(child, child.label, {'count': form.vars.counts[index]}) }}
+  {% endfor %}
+  </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block form_label %}
+{% spaceless %}
+  {% if count is defined %}
+    {% if not compound %}
+      {% set label_attr = label_attr|merge({'for': id}) %}
+    {% endif %}
+    {% if required %}
+      {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+    {% endif %}
+    {% if label is empty %}
+      {% set label = name|humanize %}
+    {% endif %}
+    <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+      {{ label|trans({}, translation_domain) }}
+      {% if count is defined and count is not null %}
+        <span class="count">({{ count }})</span>
+      {% endif %}
+    </label>
+  {% else %}
+    {{ parent() }}
+  {% endif %}
+{% endspaceless %}
+{% endblock %}
