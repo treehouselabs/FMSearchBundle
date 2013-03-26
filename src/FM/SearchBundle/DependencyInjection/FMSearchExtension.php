@@ -24,6 +24,10 @@ class FMSearchExtension extends Extension
             $container->removeDefinition('fm_search.data_collector');
         }
 
+        if ($config['auto_index'] === false) {
+            $container->removeDefinition('fm_search.event.listener.index');
+        }
+
         $this->loadSchemaMapping($config, $container);
         $this->loadSolariumClient($config, $container);
         $this->loadFormExtension($container);
@@ -32,20 +36,15 @@ class FMSearchExtension extends Extension
     protected function loadSchemaMapping(array $config, ContainerBuilder $container)
     {
         if ($config['auto_mapping']) {
-
             $dirs = array();
-
             foreach ($container->getParameter('kernel.bundles') as $name => $class) {
                 $dir = $this->getBundleEntityDir(new \ReflectionClass($class));
                 if (is_dir($dir)) {
                     $dirs[] = $dir;
                 }
             }
-
         } elseif (isset($config['mappings']) && !empty($config['mappings'])) {
-
             $dirs = $config['mappings'];
-
         } else {
             throw new \LogicException('You must provide one or more mappings when "auto_mapping" is set to false');
         }

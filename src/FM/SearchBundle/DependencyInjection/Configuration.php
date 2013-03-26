@@ -78,6 +78,9 @@ class Configuration implements ConfigurationInterface
                     ->values(array('curl', 'http', 'pecl_http', 'zend_http'))
                 ->end()
                 ->scalarNode('adapter_class')->cannotBeEmpty()->end()
+
+                // whether to index entities by default via listeners
+                ->booleanNode('auto_index')->defaultValue(true)->end()
             ->end()
         ;
 
