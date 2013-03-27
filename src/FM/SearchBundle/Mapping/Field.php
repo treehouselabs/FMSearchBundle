@@ -48,9 +48,14 @@ class Field
         }
     }
 
-    public function setRequired($bool)
+    public function setRequired($bool = true)
     {
         $this->required = (bool) $bool;
+    }
+
+    public function isRequired()
+    {
+        return $this->required;
     }
 
     public function setMultiValued($multiValued)

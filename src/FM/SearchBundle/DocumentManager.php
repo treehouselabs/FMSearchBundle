@@ -536,11 +536,16 @@ class DocumentManager
         $this->eventDispatcher->dispatch(SearchEvents::PRE_SET_FIELDS, $event);
 
         foreach ($schema->getFields() as $field) {
-
             $value = $field->getValue($entity);
 
             if (is_null($value) || (is_string($value) && ($value === ''))) {
-                // continue right away
+                if ($field->isRequired()) {
+                    throw new \RuntimeException(
+                        sprintf('Empty value for field "%s"', $field->getName())
+                    );
+                }
+
+                // move along
                 continue;
             }
 
