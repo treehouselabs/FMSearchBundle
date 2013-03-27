@@ -67,11 +67,13 @@ class SchemaFactory
             if ($annotation = $this->builder->getSchemaAnnotation($reflClass)) {
 
                 $strategy = $this->getNamingStrategy($annotation->get('namingStrategy', 'underscore'));
+                $repositoryClass = $annotation->get('repositoryClass', 'FM\SearchBundle\Repository\DocumentRepository');
 
                 $name = $annotation->get('name', $reflClass->getShortName());
                 $name = $strategy->classToSchemaName($name);
 
                 $schema = $this->builder->buildSchema($name, $reflClass, $strategy);
+                $schema->setRepositoryClass($repositoryClass);
 
                 if (array_key_exists($name, $this->builderPasses)) {
                     foreach ($this->builderPasses[$name] as $pass) {

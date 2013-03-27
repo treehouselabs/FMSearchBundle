@@ -8,6 +8,7 @@ class Schema
     private $name;
     private $uniqueKey;
     private $fields;
+    private $repositoryClass;
 
     public function __construct($name)
     {
@@ -67,5 +68,15 @@ class Schema
     public function getUniqueKeyField()
     {
         return $this->getField($this->getUniqueKey());
+    }
+
+    public function setRepositoryClass($class)
+    {
+        $this->repositoryClass = $class;
+    }
+
+    public function getRepositoryClass()
+    {
+        return $this->repositoryClass;
     }
 }

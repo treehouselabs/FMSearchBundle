@@ -24,7 +24,7 @@ services:
 
     # events
     fm_search.event.listener.index:
-        class: FM\SearchBundle\Event\Listener\IndexListener
+        class: FM\SearchBundle\EventListener\IndexListener
         arguments: [@fm_search.document_manager]
         tags:
             - { name: doctrine.event_listener, event: postPersist }

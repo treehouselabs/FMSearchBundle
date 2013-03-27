@@ -1,6 +1,6 @@
 <?php
 
-namespace FM\SearchBundle\Event\Listener;
+namespace FM\SearchBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 

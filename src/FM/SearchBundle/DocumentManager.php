@@ -31,6 +31,7 @@ class DocumentManager
 
     private $schemas        = array();
     private $schemaClasses  = array();
+    private $repositories   = array();
     private $updates        = array();
     private $documentMap    = array();
     private $schemaMap      = array();
@@ -112,6 +113,26 @@ class DocumentManager
         }
 
         return $this->schemas[$schema];
+    }
+
+    /**
+     * Gets the repository for a schema.
+     *
+     * @param  string $schema The schema name, or the class this schema is mapped to.
+     * @return FM\SearchBundle\Repository\DocumentRepository
+     */
+    public function getRepository($schema)
+    {
+        if (!($schema instanceof Schema)) {
+            $schema = $this->getSchema($schema);
+        }
+
+        if (!array_key_exists($schema->getName(), $this->repositories)) {
+            $repoClass = $schema->getRepositoryClass();
+            $this->repositories[$schema->getName()] = new $repoClass($this, $schema);
+        }
+
+        return $this->repositories[$schema->getName()];
     }
 
     /**
