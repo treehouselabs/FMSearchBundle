@@ -24,6 +24,8 @@ class Configuration implements ConfigurationInterface
             ->fixXmlConfig('client')
             ->fixXmlConfig('accessor_type')
             ->children()
+                ->scalarNode('cache_dir')->defaultValue('%kernel.cache_dir%/fm_search')->end()
+
                 ->arrayNode('clients')
                     ->useAttributeAsKey('name')
                     ->prototype('array')

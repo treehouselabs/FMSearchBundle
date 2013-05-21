@@ -24,6 +24,12 @@ class SchemaBuilder
         $this->registry = $registry;
     }
 
+    /**
+     * Returns the @Schema annotation of a class, if defined.
+     *
+     * @param  ReflectionClass       $reflClass
+     * @return Annotation\Annotation
+     */
     public function getSchemaAnnotation(ReflectionClass $reflClass)
     {
         foreach ($this->annotationReader->getClassAnnotations($reflClass) as $annotation) {
@@ -33,6 +39,14 @@ class SchemaBuilder
         }
     }
 
+    /**
+     * Builds a new Schema instance, based on a class' annotations.
+     *
+     * @param  string          $name     The schema name
+     * @param  ReflectionClass $class    The class
+     * @param  NamingStrategy  $strategy Naming strategy to use
+     * @return Schema
+     */
     public function buildSchema($name, ReflectionClass $class, NamingStrategy $strategy)
     {
         $className = $class->name;
@@ -68,6 +82,12 @@ class SchemaBuilder
         return $schema;
     }
 
+    /**
+     * Validates a schema.
+     *
+     * @param  Schema          $schema
+     * @throws \LogicException When schema is invalid
+     */
     public function validateSchema(Schema $schema)
     {
         if (!$schema->getUniqueKey()) {
@@ -86,6 +106,16 @@ class SchemaBuilder
         }
     }
 
+    /**
+     * Creates a new field.
+     *
+     * @param string $type         The field type
+     * @param string $name         The field name
+     * @param string $accessorType The accessor key, as defined in the registry
+     * @param string $propertyName Optional property name which the field is
+     *                              mapped to
+     * @return Field
+     */
     public function createField($type, $name, $accessorType = null, $propertyName = null)
     {
         $fieldType = $this->registry->getFieldType($type);
@@ -96,6 +126,14 @@ class SchemaBuilder
         return new Field($fieldType, $name, $accessor, $propertyName);
     }
 
+    /**
+     * Adds a field to the schema.
+     *
+     * @param Schema                $schema
+     * @param string                $name
+     * @param string                $propertyName
+     * @param Annotation\Annotation $annotation
+     */
     protected function addField(Schema $schema, $name, $propertyName, $annotation)
     {
         $field = $this->createField(
@@ -114,5 +152,78 @@ class SchemaBuilder
         }
 
         $schema->addField($field);
+    }
+
+    /**
+     * Serializes schemas. See serializeSchema for the implementation.
+     *
+     * @param  array $schemas
+     * @return array An array with the serialized schemas
+     */
+    public function serializeSchemas(array $schemas)
+    {
+        $serialized = array();
+
+        foreach ($schemas as $name => $schema) {
+            $serialized[$name] = $this->serializeSchema($schema);
+        }
+
+        return $serialized;
+    }
+
+    /**
+     * Serializes a schema. Uses PHP's internal `serialize` method for this,
+     * with the exception of the fields accessors. Since these are often classes
+     * with closures or services, only the registered accessor type is
+     * serialized. When unserializing, the accessor type is looked up in the
+     * registry and set into the field again.
+     *
+     * @param  Schema $schema
+     * @return string
+     */
+    public function serializeSchema(Schema $schema)
+    {
+        foreach ($schema->getFields() as $field) {
+            if (null === $accessorType = $this->registry->getTypeName('accessor', $field->getAccessor())) {
+                throw new \LogicException(sprintf('Could not determine type for accessor "%s". Did you forget to register it?', get_class($field->getAccessor())));
+            }
+            $field->setAccessorType($accessorType);
+        }
+
+        return serialize($schema);
+    }
+
+    /**
+     * Unserializes an array of schemas.
+     *
+     * @param  array $schemas
+     * @return array An array with the unserialized schemas
+     */
+    public function unserializeSchemas(array $schemas)
+    {
+        $unserialized = array();
+
+        foreach ($schemas as $name => $schema) {
+            $unserialized[$name] = $this->unserializeSchema(unserialize($schema));
+        }
+
+        return $unserialized;
+    }
+
+    /**
+     * Unserializes a schema. Resets the accessors of the fields. See
+     * serializeSchema.
+     *
+     * @param  Schema $schema
+     * @return Schema
+     */
+    public function unserializeSchema(Schema $schema)
+    {
+        foreach ($schema->getFields() as $field) {
+            $accessor = $this->registry->getAccessorType($field->getAccessorType());
+            $field->setAccessor($accessor);
+        }
+
+        return $schema;
     }
 }

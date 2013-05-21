@@ -13,6 +13,7 @@ class Field
     private $type;
     private $name;
     private $accessor;
+    private $accessorType;
     private $boost;
     private $required;
     private $multiValued;
@@ -76,5 +77,42 @@ class Field
     public function getBoost()
     {
         return $this->boost;
+    }
+
+    public function setAccessor(PropertyAccessorInterface $accessor)
+    {
+        $this->accessor = $accessor;
+    }
+
+    public function getAccessor()
+    {
+        return $this->accessor;
+    }
+
+    public function setAccessorType($type)
+    {
+        $this->accessorType = $type;
+    }
+
+    public function getAccessorType()
+    {
+        return $this->accessorType;
+    }
+
+    /**
+     * Makes sure the accessor instance is not serialized.
+     *
+     * @return array
+     */
+    public function __sleep()
+    {
+        return array(
+            'type',
+            'name',
+            'accessorType',
+            'boost',
+            'required',
+            'multiValued',
+        );
     }
 }

@@ -141,6 +141,7 @@ class Query
         $this->prepare();
 
         $client = $this->manager->getClient();
+
         $endpoint = $this->manager->getEndpoint($this->search->getSchema());
         $hydrator = $this->manager->getHydrator($hydrationMode);
 

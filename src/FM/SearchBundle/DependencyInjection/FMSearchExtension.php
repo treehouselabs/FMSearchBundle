@@ -19,6 +19,8 @@ class FMSearchExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
+        $container->setParameter('fm_search.cache_dir', $config['cache_dir']);
+
         // remove data collector when we're not debugging
         if (!$container->getParameter('kernel.debug')) {
             $container->removeDefinition('fm_search.data_collector');
