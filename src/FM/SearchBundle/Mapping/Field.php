@@ -7,7 +7,6 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 
 use FM\SearchBundle\Mapping\Field\Type;
-use FM\SearchBundle\PropertyAccess\AccessorInterface;
 
 class Field
 {

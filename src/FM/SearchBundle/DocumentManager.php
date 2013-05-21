@@ -118,7 +118,7 @@ class DocumentManager
     /**
      * Gets the repository for a schema.
      *
-     * @param  string $schema The schema name, or the class this schema is mapped to.
+     * @param  string                                        $schema The schema name, or the class this schema is mapped to.
      * @return FM\SearchBundle\Repository\DocumentRepository
      */
     public function getRepository($schema)

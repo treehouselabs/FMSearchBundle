@@ -85,7 +85,7 @@ class SchemaBuilder
     /**
      * Validates a schema.
      *
-     * @param  Schema $schema
+     * @param  Schema          $schema
      * @throws \LogicException When schema is invalid
      */
     public function validateSchema(Schema $schema)
@@ -109,10 +109,10 @@ class SchemaBuilder
     /**
      * Creates a new field.
      *
-     * @param  string $type         The field type
-     * @param  string $name         The field name
-     * @param  string $accessorType The accessor key, as defined in the registry
-     * @param  string $propertyName Optional property name which the field is
+     * @param string $type         The field type
+     * @param string $name         The field name
+     * @param string $accessorType The accessor key, as defined in the registry
+     * @param string $propertyName Optional property name which the field is
      *                              mapped to
      * @return Field
      */
@@ -157,8 +157,8 @@ class SchemaBuilder
     /**
      * Serializes schemas. See serializeSchema for the implementation.
      *
-     * @param  array  $schemas
-     * @return array           An array with the serialized schemas
+     * @param  array $schemas
+     * @return array An array with the serialized schemas
      */
     public function serializeSchemas(array $schemas)
     {
@@ -196,8 +196,8 @@ class SchemaBuilder
     /**
      * Unserializes an array of schemas.
      *
-     * @param  array  $schemas
-     * @return array           An array with the unserialized schemas
+     * @param  array $schemas
+     * @return array An array with the unserialized schemas
      */
     public function unserializeSchemas(array $schemas)
     {
