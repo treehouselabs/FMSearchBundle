@@ -59,6 +59,11 @@ class Registry
             throw new \LogicException(sprintf('%s type "%s" is already defined', $registry, $name));
         }
 
+        // make sure it's fully qualified
+        if (substr($className, 0, 1) !== '\\') {
+            $className = '\\' . $className;
+        }
+
         $this->mapping[$registry][$name] = $className;
     }
 
@@ -123,7 +128,7 @@ class Registry
      *
      * @param  string        $registry
      * @param  object|string $type     Type instance or FQCN
-     * @return mixed
+     * @return string|null
      */
     public function getTypeName($registry, $type)
     {
@@ -135,6 +140,6 @@ class Registry
             $type = '\\' . $type;
         }
 
-        return array_search($type, $this->mapping[$registry]);
+        return array_search($type, $this->mapping[$registry]) ?: null;
     }
 }

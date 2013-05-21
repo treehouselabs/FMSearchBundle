@@ -2,13 +2,13 @@
 
 namespace FM\SearchBundle\Factory;
 
+use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\Resource\FileResource;
+
 use FM\SearchBundle\Mapping\Annotation;
 use FM\SearchBundle\Factory\Driver\DriverInterface;
 use FM\SearchBundle\Factory\SchemaBuilderPass;
 
-/**
- * TODO cache schemas
- */
 class SchemaFactory
 {
     public static $namingStrategies = array(
@@ -17,15 +17,19 @@ class SchemaFactory
 
     private $driver;
     private $builder;
-    private $builderPasses;
+    private $cacheDir;
+    private $debug;
+
+    private $builderPasses = array();
     private $schemas;
     private $classes;
 
-    public function __construct(DriverInterface $driver, SchemaBuilder $builder)
+    public function __construct(DriverInterface $driver, SchemaBuilder $builder, $cacheDir, $debug = false)
     {
         $this->driver = $driver;
         $this->builder = $builder;
-        $this->builderPasses = array();
+        $this->cacheDir = $cacheDir;
+        $this->debug = $debug;
     }
 
     public function addSchemaBuilderPass(SchemaBuilderPass $pass, $schema)
@@ -57,35 +61,75 @@ class SchemaFactory
 
     protected function loadSchemas()
     {
-        $this->schemas = array();
-        $this->classes = array();
+        // use cached schemas
+        $cache = new ConfigCache($this->cacheDir . '/schemas.php', $this->debug);
 
-        foreach ($this->driver->getAllClassNames() as $class) {
+        if (!$cache->isFresh()) {
 
-            $reflClass = new \ReflectionClass($class);
+            $this->schemas = array();
+            $this->classes = array();
 
-            if ($annotation = $this->builder->getSchemaAnnotation($reflClass)) {
+            // collect resources
+            $resources = array();
 
-                $strategy = $this->getNamingStrategy($annotation->get('namingStrategy', 'underscore'));
-                $repositoryClass = $annotation->get('repositoryClass', 'FM\SearchBundle\Repository\DocumentRepository');
+            foreach ($this->driver->getAllClassNames() as $class) {
+                $reflClass = new \ReflectionClass($class);
 
-                $name = $annotation->get('name', $reflClass->getShortName());
-                $name = $strategy->classToSchemaName($name);
+                // add class to resources
+                $resources[] = new FileResource($reflClass->getFilename());
 
-                $schema = $this->builder->buildSchema($name, $reflClass, $strategy);
-                $schema->setRepositoryClass($repositoryClass);
+                if ($annotation = $this->builder->getSchemaAnnotation($reflClass)) {
 
-                if (array_key_exists($name, $this->builderPasses)) {
-                    foreach ($this->builderPasses[$name] as $pass) {
-                        $pass->build($schema, $this->builder);
+                    $strategy = $this->getNamingStrategy($annotation->get('namingStrategy', 'underscore'));
+                    $repositoryClass = $annotation->get('repositoryClass', 'FM\SearchBundle\Repository\DocumentRepository');
+
+                    $name = $annotation->get('name', $reflClass->getShortName());
+                    $name = $strategy->classToSchemaName($name);
+
+                    $schema = $this->builder->buildSchema($name, $reflClass, $strategy);
+                    $schema->setRepositoryClass($repositoryClass);
+
+                    if (array_key_exists($name, $this->builderPasses)) {
+                        foreach ($this->builderPasses[$name] as $pass) {
+                            $pass->build($schema, $this->builder);
+
+                            $reflPass = new \ReflectionClass($pass);
+                            $resources[] = new FileResource($reflPass->getFilename());
+                        }
                     }
+
+                    $this->builder->validateSchema($schema);
+
+                    $this->schemas[$name] = $schema;
+                    $this->classes[$reflClass->name] = $name;
                 }
-
-                $this->builder->validateSchema($schema);
-
-                $this->schemas[$name] = $schema;
-                $this->classes[$reflClass->name] = $name;
             }
+
+            $serializedSchemas = $this->builder->serializeSchemas($this->schemas);
+
+            $content = sprintf(<<<EOF
+<?php
+    \$schemas = %s;
+    \$classes = %s;
+
+    return array(
+        \$schemas,
+        \$classes
+    );
+
+EOF
+                ,
+                var_export($serializedSchemas, true),
+                var_export(serialize($this->classes), true)
+            );
+
+            $cache->write($content, $resources);
+
+        } else {
+            list($schemas, $classes) = include $cache;
+
+            $this->schemas = $this->builder->unserializeSchemas($schemas);
+            $this->classes = unserialize($classes);
         }
     }
 
