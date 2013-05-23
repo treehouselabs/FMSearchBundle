@@ -14,6 +14,7 @@ class Field
     private $name;
     private $accessor;
     private $accessorType;
+    private $propertyPath;
     private $boost;
     private $required;
     private $multiValued;
@@ -106,13 +107,9 @@ class Field
      */
     public function __sleep()
     {
-        return array(
-            'type',
-            'name',
-            'accessorType',
-            'boost',
-            'required',
-            'multiValued',
-        );
+        $properties = get_class_vars(get_class($this));
+        unset($properties['accessor']);
+
+        return array_keys($properties);
     }
 }
