@@ -83,6 +83,18 @@ class Configuration implements ConfigurationInterface
 
                 // whether to index entities by default via listeners
                 ->booleanNode('auto_index')->defaultValue(true)->end()
+
+                ->arrayNode('form')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('resources')
+                            ->prototype('scalar')->end()
+                            ->treatFalseLike(array())
+                            ->treatNullLike(array())
+                            ->defaultValue(array('FMSearchBundle:Form:form_div_layout.html.twig'))
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 

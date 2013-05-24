@@ -32,7 +32,7 @@ class FMSearchExtension extends Extension
 
         $this->loadSchemaMapping($config, $container);
         $this->loadSolariumClient($config, $container);
-        $this->loadFormExtension($container);
+        $this->loadFormExtension($container, $config['form']['resources']);
     }
 
     protected function loadSchemaMapping(array $config, ContainerBuilder $container)
@@ -111,10 +111,15 @@ class FMSearchExtension extends Extension
         }
     }
 
-    protected function loadFormExtension(ContainerBuilder $container)
+    protected function loadFormExtension(ContainerBuilder $container, array $resources)
     {
-        $resources = $container->hasParameter('twig.form.resources') ? $container->getParameter('twig.form.resources') : array();
-        $resources[] = 'FMSearchBundle:Form:form_div_layout.html.twig';
+        if ($container->hasParameter('twig.form.resources')) {
+            $resources = array_merge(
+                $container->getParameter('twig.form.resources'),
+                $resources
+            );
+        }
+
         $container->setParameter('twig.form.resources', $resources);
     }
 }

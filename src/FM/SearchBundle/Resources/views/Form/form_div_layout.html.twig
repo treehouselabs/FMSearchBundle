@@ -25,7 +25,7 @@
   <div {{ block('widget_container_attributes') }}>
   {% for index, child in form %}
     {{ form_widget(child) }}
-    {{ form_label(child, child.label, {'count': form.vars.counts[index]}) }}
+    {{ form_label(child, child.vars.label, {'count': form.vars.counts[index]}) }}
   {% endfor %}
   </div>
 {% endspaceless %}
