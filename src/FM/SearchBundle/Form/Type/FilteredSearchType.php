@@ -33,16 +33,13 @@ class FilteredSearchType extends AbstractType
         $result = isset($options['result']) ? $options['result'] : null;
 
         foreach ($search->getFilters() as $filter) {
-
             if ($this->skipFilter($filter, $options)) {
                 continue;
             }
 
             try {
-
                 $config = $this->getChildConfig($filter, $options);
                 $builder->add($config['child'], $config['type'], $config['options']);
-
             } catch (Exception\FormBuilderException $fbe) {
                 // couldn't create form child...
             }
@@ -76,6 +73,10 @@ class FilteredSearchType extends AbstractType
             return $this->getRangeFilterConfig($filter, $options);
         }
 
+        if ($filter->getConfig()->get('render') === 'hidden') {
+            return $this->getHiddenFilterConfig($filter, $options);
+        }
+
         if ($filter->getField()->getType() instanceof FieldType\String) {
             return $this->getTextFilterConfig($filter, $options);
         }
@@ -97,6 +98,25 @@ class FilteredSearchType extends AbstractType
             'type' => 'text',
             'options' => array(
                 'label'    => $filter->getLabel() ?: sprintf($options['label_pattern'], $filter->getName()),
+                'mapped'   => false,
+                'required' => false
+            )
+        );
+    }
+
+    /**
+     * Returns form child config for a hidden filter
+     *
+     * @param  Filter $filter  The filter
+     * @param  array  $options The form options
+     * @return array
+     */
+    protected function getHiddenFilterConfig(Filter $filter, array $options)
+    {
+        return array(
+            'child' => $filter->getName(),
+            'type' => 'hidden',
+            'options' => array(
                 'mapped'   => false,
                 'required' => false
             )
