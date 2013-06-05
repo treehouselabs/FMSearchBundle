@@ -198,18 +198,17 @@ class Filter
             $value = array($value);
         }
 
+        // Put in new array if the filter expects multiple values, and the
+        // given array is only 1 level deep. But don't do this for choices,
+        // which should translate into array values.
         if ($this->type->isMultiValued() && !$this->hasChoices() && !is_array(current($value))) {
-
-            // Put in new array if the filter expects multiple values, and the
-            // given array is only 1 level deep. But don't do this for choices,
-            // which should translate into array values.
             $value = array($value);
+        }
 
-        } elseif (($this->type instanceof Type\Range) && !$this->type->isPredefined($this) && !is_array(current($value))) {
-
-            // Type is a non-predefined range, thus expecting an array for each
-            // filter. But array is only 1 level deep, and we want to be able to
-            // filter more than one range, so nest it 1 level deeper.
+        // Type is a non-predefined range, thus expecting an array for each
+        // filter. But array is only 1 level deep, and we want to be able to
+        // filter more than one range, so nest it 1 level deeper.
+        if (($this->type instanceof Type\Range) && !$this->type->isPredefined($this) && !is_array(current($value))) {
             $value = array($value);
         }
 
@@ -220,7 +219,6 @@ class Filter
         // one instance of the filter. This way, we ensure the same structure
         // for each filter.
         foreach ($value as $queryValue) {
-
             if ($this->hasChoices()) {
                 // transform choices into query value
                 $queryValue = $this->transformChoice($queryValue, $query);

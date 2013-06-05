@@ -130,7 +130,6 @@ class Range implements Type
         // go through each choice and validate it
         $transformed = array();
         foreach ($choice as $key => $value) {
-
             // check for valid key
             if (!$predefined && !isset($filterChoices[$key])) {
                 throw new \OutOfBoundsException(sprintf(
@@ -164,6 +163,21 @@ class Range implements Type
                 }
 
                 $transformed[$key] = $filterChoices[$key][$value];
+            }
+        }
+
+        // both the start and end have to be set in a range
+        if (sizeof($transformed) < 2) {
+            if ($predefined) {
+                // just add a wildcard to the values: we'll use the first one as start
+                $transformed[] = '*';
+            } else {
+                // we can auto-fill the value with a wildcard
+                foreach (array_keys($filterChoices) as $choice) {
+                    if (!isset($transformed[$choice])) {
+                        $transformed[$choice] = '*';
+                    }
+                }
             }
         }
 
