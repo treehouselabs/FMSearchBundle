@@ -69,6 +69,21 @@ class SearchBuilder implements SearchBuilderInterface
         return $this->filters;
     }
 
+    /**
+     * Removes a filter.
+     *
+     * @param  string $name
+     * @throws \OutOfBoundsException When filter does not exist
+     */
+    public function removeFilter($name)
+    {
+        if (!isset($this->filters[$name])) {
+            throw new \OutOfBoundsException(sprintf('Filter with name "%s" does not exist', $name));
+        }
+
+        unset($this->filters[$name]);
+    }
+
     public function getSearch()
     {
         $search = new Search($this->schema);
