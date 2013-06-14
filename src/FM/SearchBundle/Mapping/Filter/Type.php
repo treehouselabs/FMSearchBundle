@@ -9,8 +9,23 @@ interface Type
     const EQUALS = 'equals';
     const RANGE  = 'range';
 
+    /**
+     * @return boolean
+     */
     public function isMultiValued();
+
+    /**
+     * @param  string $name
+     * @return string
+     */
     public function getQuery($name);
+
+    /**
+     * @param  Filter $filter
+     * @param  mixed $choice
+     * @return mixed
+     */
+    public function getChoice(Filter $filter, $choice);
 
     /**
      * Normalizes choice to use in Solr query.

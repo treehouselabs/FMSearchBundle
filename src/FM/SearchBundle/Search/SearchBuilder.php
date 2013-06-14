@@ -14,13 +14,37 @@ use FM\SearchBundle\Mapping\Facet\Type as FacetType;
 
 class SearchBuilder implements SearchBuilderInterface
 {
+    /**
+     * @var Schema
+     */
     private $schema;
+
+    /**
+     * @var array
+     */
     private $options;
+
+    /**
+     * @var EventDispatcherInterface
+     */
     private $dispatcher;
 
+    /**
+     * @var string
+     */
     private $query;
+
+    /**
+     * @var array
+     */
     private $filters = array();
 
+    /**
+     * @param Registry                 $registry
+     * @param Schema                   $schema
+     * @param array                    $options
+     * @param EventDispatcherInterface $dispatcher
+     */
     public function __construct(Registry $registry, Schema $schema, array $options, EventDispatcherInterface $dispatcher)
     {
         $this->registry   = $registry;
@@ -29,11 +53,31 @@ class SearchBuilder implements SearchBuilderInterface
         $this->dispatcher = $dispatcher;
     }
 
+    /**
+     * @return Schema
+     */
+    public function getSchema()
+    {
+        return $this->schema;
+    }
+
+    /**
+     * Sets default search query. This is to limit the result set which is
+     * eventually filtered. Use this when you want to restrict the set of
+     * documents that you want to search in.
+     *
+     * @param string $query
+     */
     public function setQuery($query)
     {
         $this->query = $query;
     }
 
+    /**
+     * @param string $name    The filter name
+     * @param string $type    The filter type, one of the FacetType constants
+     * @param array  $options The filter options
+     */
     public function addFilter($name, $type = null, array $options = array())
     {
         if (!isset($options['facet'])) {
@@ -41,11 +85,8 @@ class SearchBuilder implements SearchBuilderInterface
         }
 
         if ($options['facet'] === false) {
-
             $facet = null;
-
         } else {
-
             $facet = (array) $options['facet'];
 
             if (!isset($facet['type'])) {
@@ -64,14 +105,28 @@ class SearchBuilder implements SearchBuilderInterface
         );
     }
 
+    /**
+     * @return array
+     */
     public function getFilters()
     {
         return $this->filters;
     }
 
     /**
-     * Removes a filter.
-     *
+     * @param  string $name
+     * @throws \OutOfBoundsException When filter does not exist
+     */
+    public function getFilter($name)
+    {
+        if (!isset($this->filters[$name])) {
+            throw new \OutOfBoundsException(sprintf('Filter with name "%s" does not exist', $name));
+        }
+
+        return $this->filters[$name];
+    }
+
+    /**
      * @param  string $name
      * @throws \OutOfBoundsException When filter does not exist
      */
@@ -84,6 +139,9 @@ class SearchBuilder implements SearchBuilderInterface
         unset($this->filters[$name]);
     }
 
+    /**
+     * @return Search
+     */
     public function getSearch()
     {
         $search = new Search($this->schema);
@@ -94,6 +152,11 @@ class SearchBuilder implements SearchBuilderInterface
         return $search;
     }
 
+    /**
+     * Applies the default query to the search, see setQuery.
+     *
+     * @param  Search $search
+     */
     protected function applyQuery(Search $search)
     {
         if ($this->query) {
@@ -101,10 +164,14 @@ class SearchBuilder implements SearchBuilderInterface
         }
     }
 
+    /**
+     * Applies the filters to the search
+     *
+     * @param  Search $search
+     */
     protected function applyFilters(Search $search)
     {
         foreach ($this->filters as $name => $config) {
-
             $type = $config['type'];
             $options = $config['options'];
 
@@ -117,6 +184,14 @@ class SearchBuilder implements SearchBuilderInterface
         }
     }
 
+    /**
+     * @param  Field  $field
+     * @param  string $name
+     * @param  string $type
+     * @param  array  $options
+     * @param  array  $facetConfig
+     * @return Filter
+     */
     protected function createFilter(Field $field, $name, $type, array $options, array $facetConfig = null)
     {
         $filterType = $this->registry->getFilterType($type);
@@ -139,6 +214,12 @@ class SearchBuilder implements SearchBuilderInterface
         return $filter;
     }
 
+    /**
+     * @param  string $type
+     * @param  string $name
+     * @param  array  $options
+     * @return Facet
+     */
     protected function createFacet($type, $name, array $options)
     {
         $facetType = $this->registry->getFacetType($type);

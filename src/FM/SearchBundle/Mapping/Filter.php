@@ -25,6 +25,12 @@ class Filter
     private $label;
     private $helper;
 
+    /**
+     * @param string $name
+     * @param Field  $field
+     * @param Type   $type
+     * @param array  $config
+     */
     public function __construct($name, Field $field, Type $type, array $config)
     {
         $this->name = $name;
@@ -35,6 +41,9 @@ class Filter
         $this->init($config);
     }
 
+    /**
+     * @param  array  $config
+     */
     protected function init(array $config)
     {
         $this->operator = strtoupper($this->config->get('operator', 'OR'));
@@ -70,41 +79,88 @@ class Filter
         $this->label = $this->config->get('label');
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @return Field
+     */
     public function getField()
     {
         return $this->field;
     }
 
+    /**
+     * @return Type
+     */
     public function getType()
     {
         return $this->type;
     }
 
+    /**
+     * @return array
+     */
     public function getConfig()
     {
         return $this->config;
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
+    public function setConfigValue($name, $value)
+    {
+        $this->config[$name] = $value;
+    }
+
+    /**
+     * @param  string $name
+     * @return mixed
+     * @throws \OutOfBoundsException If config does not have a value by this name
+     */
+    public function getConfigValue($name)
+    {
+        if (!array_key_exists($name, $this->config)) {
+            throw new \OutOfBoundsException(sprintf('"%s" is not a valid config key', $name));
+        }
+
+        return $this->config[$name];
+    }
+
+    /**
+     * @return string
+     */
     public function getOperator()
     {
         return $this->operator;
     }
 
+    /**
+     * @return array
+     */
     public function getChoices()
     {
         return $this->choices;
     }
 
+    /**
+     * @return boolean
+     */
     public function hasChoices()
     {
         return !is_null($this->choices);
     }
 
+    /**
+     * @return Helper
+     */
     public function getHelper()
     {
         if (is_null($this->helper)) {
@@ -114,17 +170,26 @@ class Filter
         return $this->helper;
     }
 
+    /**
+     * @return string
+     */
     public function getLabel()
     {
         return $this->label;
     }
 
+    /**
+     * @param Facet $facet
+     */
     public function setFacet(Facet $facet)
     {
         $facet->setFilter($this);
         $this->facet = $facet;
     }
 
+    /**
+     * @return Facet
+     */
     public function getFacet()
     {
         return $this->facet;
@@ -172,6 +237,10 @@ class Filter
         return $choice;
     }
 
+    /**
+     * @param  mixed $value
+     * @return mixed
+     */
     public function getChoice($value)
     {
         if (null !== $choice = $this->type->getChoice($this, $value)) {
@@ -238,6 +307,9 @@ class Filter
         }
     }
 
+    /**
+     * @return string
+     */
     protected function getQuery(array $value)
     {
         $query = $this->type->getQuery($this->field->getName());

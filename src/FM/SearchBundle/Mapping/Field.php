@@ -19,6 +19,14 @@ class Field
     private $required;
     private $multiValued;
 
+    /**
+     * Constructor
+     *
+     * @param Type                      $type
+     * @param string                    $name
+     * @param PropertyAccessorInterface $accessor
+     * @param string|null               $propertyPath
+     */
     public function __construct(Type $type, $name, PropertyAccessorInterface $accessor, $propertyPath = null)
     {
         $this->type = $type;
@@ -29,16 +37,45 @@ class Field
         $this->multiValued = false;
     }
 
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return string
+     */
     public function getType()
     {
         return $this->type;
     }
 
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * Returns the value for this field of a given entity. Uses the accessor to
+     * obtain the value.
+     *
+     * @param  string $entity
+     * @return mixed
+     */
     public function getValue($entity)
     {
         try {
@@ -50,54 +87,100 @@ class Field
         }
     }
 
+    /**
+     * @param boolean $bool
+     */
     public function setRequired($bool = true)
     {
         $this->required = (bool) $bool;
     }
 
+    /**
+     * @return boolean
+     */
     public function isRequired()
     {
         return $this->required;
     }
 
+    /**
+     * @param boolean $multiValued
+     */
     public function setMultiValued($multiValued)
     {
         $this->multiValued = (bool) $multiValued;
     }
 
+    /**
+     * @return boolean
+     */
     public function isMultiValued()
     {
         return $this->multiValued;
     }
 
+    /**
+     * @param float $boost
+     */
     public function setBoost($boost)
     {
         $this->boost = (float) $boost;
     }
 
+    /**
+     * @return float
+     */
     public function getBoost()
     {
         return $this->boost;
     }
 
+    /**
+     * @param PropertyAccessorInterface $accessor
+     */
     public function setAccessor(PropertyAccessorInterface $accessor)
     {
         $this->accessor = $accessor;
     }
 
+    /**
+     * @return PropertyAccessorInterface
+     */
     public function getAccessor()
     {
         return $this->accessor;
     }
 
+    /**
+     * @param string $type
+     */
     public function setAccessorType($type)
     {
         $this->accessorType = $type;
     }
 
+    /**
+     * @return string
+     */
     public function getAccessorType()
     {
         return $this->accessorType;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPropertyPath($path)
+    {
+        $this->propertyPath = $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPropertyPath()
+    {
+        return $this->propertyPath;
     }
 
     /**
