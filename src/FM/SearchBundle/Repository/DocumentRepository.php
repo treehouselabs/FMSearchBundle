@@ -6,6 +6,7 @@ use Solarium\QueryType\Select\Query\Query;
 
 use FM\SearchBundle\Mapping\Schema;
 use FM\SearchBundle\DocumentManager;
+use FM\SearchBundle\Search\SearchTypeInterface;
 
 class DocumentRepository
 {
@@ -18,9 +19,11 @@ class DocumentRepository
         $this->schema = $schema;
     }
 
-    public function createQuery()
+    public function createQuery(SearchTypeInterface $type)
     {
-        return $this->manager->getClient()->createSelect();
+        $search = $this->manager->getSearchFactory()->create($type, $this->schema, array());
+
+        return $this->manager->createQuery($search);
     }
 
     public function query(Query $query)
