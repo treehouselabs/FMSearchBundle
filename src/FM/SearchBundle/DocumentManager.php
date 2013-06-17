@@ -69,6 +69,14 @@ class DocumentManager
     }
 
     /**
+     * @return SearchFactory
+     */
+    public function getSearchFactory()
+    {
+        return $this->searchFactory;
+    }
+
+    /**
      * Returns the endpoint used by Solarium for the supplied schema. Each
      * schema is mapped to an endpoint.
      *
