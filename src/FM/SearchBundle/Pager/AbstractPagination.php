@@ -32,38 +32,6 @@ abstract class AbstractPagination implements Pagination
         $this->rowsPerPage = (int) $rowsPerPage;
     }
 
-    protected function validateInteger($int)
-    {
-        if (!is_numeric($int) || ($int < 0)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Expected a positive number, got %s instead',
-                var_export($int, true)
-            ));
-        }
-    }
-
-    protected function check()
-    {
-        if (!$this->calculated) {
-            if (!$this->currentPage) {
-                throw new \RuntimeException(
-                    'Please set a current page number before calculating pages'
-                );
-            }
-
-            $this->recalculate();
-            $this->calculated = true;
-        }
-    }
-
-    public function setCurrentPage($pageNumber)
-    {
-        $this->validateInteger($pageNumber);
-        $this->currentPage = (int) $pageNumber;
-
-        $this->calculated = false;
-    }
-
     public function setCountStrategy($strategy)
     {
         if (!array_key_exists($strategy, $this->countingStrategies)) {
@@ -125,14 +93,6 @@ abstract class AbstractPagination implements Pagination
         return $this->end;
     }
 
-    protected function recalculate()
-    {
-        $this->pageCount = (int) ceil($this->totalRows / $this->rowsPerPage);
-        $this->start = $this->currentPage * $this->rowsPerPage - $this->rowsPerPage;
-        $this->rowCount = ($this->currentPage === $this->pageCount || $this->pageCount === 0) ? ($this->totalRows - $this->start) : $this->rowsPerPage;
-        $this->end = $this->start + $this->rowCount;
-    }
-
     public function getPages(array $query = array())
     {
         $this->check();
@@ -157,6 +117,67 @@ abstract class AbstractPagination implements Pagination
         ksort($pages);
 
         return $pages;
+    }
+
+    public function setCurrentPage($pageNumber)
+    {
+        $this->validateInteger($pageNumber);
+        $this->currentPage = (int) $pageNumber;
+
+        $this->calculated = false;
+    }
+
+    public function getCurrentPage()
+    {
+        $this->check();
+
+        return $this->currentPage;
+    }
+
+    public function getPreviousPage()
+    {
+        $this->check();
+
+        return $this->currentPage > 1 ? $this->currentPage - 1 : null;
+    }
+
+    public function getNextPage()
+    {
+        $this->check();
+
+        return $this->currentPage < $this->pageCount ? $this->currentPage + 1 : null;
+    }
+
+    protected function recalculate()
+    {
+        $this->pageCount = (int) ceil($this->totalRows / $this->rowsPerPage);
+        $this->start = $this->currentPage * $this->rowsPerPage - $this->rowsPerPage;
+        $this->rowCount = ($this->currentPage === $this->pageCount || $this->pageCount === 0) ? ($this->totalRows - $this->start) : $this->rowsPerPage;
+        $this->end = $this->start + $this->rowCount;
+    }
+
+    protected function validateInteger($int)
+    {
+        if (!is_numeric($int) || ($int < 0)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Expected a positive number, got %s instead',
+                var_export($int, true)
+            ));
+        }
+    }
+
+    protected function check()
+    {
+        if (!$this->calculated) {
+            if (!$this->currentPage) {
+                throw new \RuntimeException(
+                    'Please set a current page number before calculating pages'
+                );
+            }
+
+            $this->recalculate();
+            $this->calculated = true;
+        }
     }
 
     abstract protected function getPageNumbers();

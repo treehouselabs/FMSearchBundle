@@ -25,11 +25,17 @@ class SwarmedPagination extends AbstractPagination
 
         // pages on the left
         $min = max(1, ($this->currentPage - $this->swarmSize));
-        $pages = range($min, $this->currentPage);
+        if ($min < $this->currentPage) {
+            $pages = range($min, $this->currentPage);
+        }
+
+        $pages[] = $this->currentPage;
 
         // pages on the right
         $max = min($this->pageCount, ($this->currentPage + $this->swarmSize));
-        $pages = array_merge($pages, range($this->currentPage, $max));
+        if ($max > $this->currentPage) {
+            $pages = array_merge($pages, range($this->currentPage, $max));
+        }
 
         return $pages;
     }

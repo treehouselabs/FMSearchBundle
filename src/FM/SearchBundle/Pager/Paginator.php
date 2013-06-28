@@ -15,13 +15,15 @@ class Paginator
         $pagination->setCurrentPage($pageNumber);
 
         return array(
-            'page_number' => $pageNumber,
+            'page_number' => $pagination->getCurrentPage(),
             'page_count'  => $pagination->getPageCount(),
             'row_count'   => $pagination->getRowCount(),
             'total'       => $pagination->getTotalRowCount(),
             'start'       => $pagination->getStart(),
             'end'         => $pagination->getEnd(),
-            'pages'       => $pagination->getPages($query)
+            'pages'       => $pagination->getPages($query),
+            'previous'    => $pagination->getPreviousPage(),
+            'next'        => $pagination->getNextPage()
         );
     }
 }
