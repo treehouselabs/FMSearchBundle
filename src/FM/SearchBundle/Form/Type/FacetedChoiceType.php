@@ -37,7 +37,6 @@ class FacetedChoiceType extends AbstractType
         $view->vars['counts'] = array();
 
         foreach ($view->vars['choices'] as $i => $choices) {
-
             // if choices are not nested, use the current index, otherwise use the nested choice keys as indices
             $index = null;
             if (!is_array($choices)) {

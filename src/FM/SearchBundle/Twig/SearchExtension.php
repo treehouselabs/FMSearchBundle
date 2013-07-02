@@ -3,14 +3,14 @@
 namespace FM\SearchBundle\Twig;
 
 use Twig_Extension;
-use Twig_Filter_Method;
+use Twig_SimpleFilter;
 
 class SearchExtension extends Twig_Extension
 {
     public function getFilters()
     {
         return array(
-            'enumerate' => new Twig_Filter_Method($this, 'enumerate'),
+            new Twig_SimpleFilter('enumerate', array($this, 'enumerate')),
         );
     }
 

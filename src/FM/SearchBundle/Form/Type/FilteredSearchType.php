@@ -181,8 +181,8 @@ class FilteredSearchType extends AbstractType
 
         // use facet results
         $facetResult = null;
-        if (($facet = $filter->getFacet()) && $result) {
-
+        $facet = $filter->getFacet();
+        if ($facet && $result) {
             $facets = $result->getFacets();
 
             // TODO if Solarium ever makes it easy to extend the response parser, inject this code somehow
@@ -222,7 +222,7 @@ class FilteredSearchType extends AbstractType
         );
 
         // set facet options
-        if (($facet = $filter->getFacet()) && $facetResult) {
+        if ($facetResult !== null) {
             $config['type'] = 'faceted_choice';
             $config['options']['facet_result'] = $facetResult;
         }
