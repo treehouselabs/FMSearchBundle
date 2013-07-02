@@ -140,7 +140,7 @@ EOF
         }
 
         if (!array_key_exists($name, $this->schemas)) {
-            throw new \OutOfBoundsException(sprintf('There is no schema "%s" defined', $name));
+            throw new \OutOfBoundsException(sprintf('There is no schema "%s" defined, available schema\'s are: %s', $name, implode(', ', array_keys($this->schemas))));
         }
 
         return $this->schemas[$name];
