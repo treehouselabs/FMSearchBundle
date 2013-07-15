@@ -261,27 +261,20 @@ class FilteredSearchType extends AbstractType
         // negation ("no") queries, hence both options.
         if ($filter->getField()->getType() instanceof FieldType\Boolean) {
             return $this->getTranslatedChoices($filter, array(
-                0 => 'no',
                 1 => 'yes',
+                0 => 'no',
             ));
         }
 
         // use facet results
         if ($facetResult) {
-            $facetValues = $this->sortChoices(array_keys($facetResult));
+            $facetValues = array_keys($facetResult);
             $choices = array_combine($facetValues, $facetValues);
 
             return $this->getTranslatedChoices($filter, $choices);
         }
 
         return array();
-    }
-
-    protected function sortChoices(array $choices)
-    {
-        sort($choices);
-
-        return $choices;
     }
 
     protected function getTranslatedChoices(Filter $filter, $choices)
