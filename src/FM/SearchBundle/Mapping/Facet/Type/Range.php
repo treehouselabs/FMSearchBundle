@@ -11,6 +11,9 @@ class Range implements Type
 {
     public function create(Facet $facet, Query $query)
     {
-        $query->getFacetSet()->createFacetRange($facet->getName(), $facet->getConfig());
+        $query->getFacetSet()->createFacetRange(array_merge(
+            array('key' => $facet->getName()),
+            $facet->getConfig()->all()
+        ));
     }
 }

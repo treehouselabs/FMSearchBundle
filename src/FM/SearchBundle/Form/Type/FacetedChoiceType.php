@@ -23,16 +23,34 @@ class FacetedChoiceType extends AbstractType
         return 'faceted_choice';
     }
 
-    protected function getChoiceCount($facetResult, $choice)
+    protected function getChoiceCount(Facet $facet, $facetResult, $choice)
     {
-        if (isset($facetResult[$choice->data])) {
-            return $facetResult[$choice->data];
+        if ($facet->getCountType() === Facet::COUNT_TYPE_EXACT) {
+            if (isset($facetResult[$choice->data])) {
+                return $facetResult[$choice->data];
+            }
+        } elseif ($facet->getCountType() === Facet::COUNT_TYPE_CUMULATIVE) {
+            $retval = 0;
+
+            // TODO if choices are not in the right order these counts won't be
+            // correct, and something more clever will be needed. For now this
+            // will work fine though.
+            foreach ($facetResult as $data => $count) {
+                $retval += $count;
+
+                if ($data === $choice->data) {
+                    break;
+                }
+            }
+
+            return $retval;
         }
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $facetResult = $options['facet_result'];
+        $facet = $options['facet'];
+        $result = $options['facet_result'];
 
         $view->vars['counts'] = array();
 
@@ -46,7 +64,7 @@ class FacetedChoiceType extends AbstractType
 
             foreach ($choices as $j => $choice) {
                 $choiceIndex = is_null($index) ? $j : $index;
-                $view->vars['counts'][$choiceIndex] = $this->getChoiceCount($facetResult, $choice);
+                $view->vars['counts'][$choiceIndex] = $this->getChoiceCount($facet, $result, $choice);
             }
         }
     }
@@ -54,7 +72,12 @@ class FacetedChoiceType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setRequired(array(
-            'facet_result'
+            'facet',
+            'facet_result',
+        ));
+
+        $resolver->setAllowedTypes(array(
+            'facet' => 'FM\SearchBundle\Mapping\Facet'
         ));
     }
 }

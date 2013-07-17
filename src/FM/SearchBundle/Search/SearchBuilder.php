@@ -93,6 +93,10 @@ class SearchBuilder implements SearchBuilderInterface
                 $facet['type'] = FacetType::FIELD;
             }
 
+            if (!isset($facet['count'])) {
+                $facet['count'] = Facet::COUNT_TYPE_EXACT;
+            }
+
             if (!isset($facet['options'])) {
                 $facet['options'] = array();
             }
@@ -200,6 +204,7 @@ class SearchBuilder implements SearchBuilderInterface
         if (!empty($facetConfig)) {
 
             $type = $facetConfig['type'];
+            $count = $facetConfig['count'];
             $options = $facetConfig['options'];
             $facetName = isset($facetConfig['name']) ? $facetConfig['name'] : $name;
 
@@ -207,7 +212,7 @@ class SearchBuilder implements SearchBuilderInterface
                 $options['field'] = $field->getName();
             }
 
-            $facet = $this->createFacet($type, $facetName, $options);
+            $facet = $this->createFacet($type, $facetName, $count, $options);
             $filter->setFacet($facet);
         }
 
@@ -217,13 +222,14 @@ class SearchBuilder implements SearchBuilderInterface
     /**
      * @param  string $type
      * @param  string $name
+     * @param  string $count
      * @param  array  $options
      * @return Facet
      */
-    protected function createFacet($type, $name, array $options)
+    protected function createFacet($type, $name, $count, array $options)
     {
         $facetType = $this->registry->getFacetType($type);
 
-        return new Facet($facetType, $name, $options);
+        return new Facet($facetType, $name, $count, $options);
     }
 }

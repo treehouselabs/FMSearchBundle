@@ -7,9 +7,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use FM\SearchBundle\Form\Exception;
+use FM\SearchBundle\Form\Type\FacetedChoiceType;
 use FM\SearchBundle\Mapping\Filter;
 use FM\SearchBundle\Mapping\Field\Type as FieldType;
 use FM\SearchBundle\Mapping\Facet;
+use FM\SearchBundle\Mapping\Facet\Type as FacetType;
 use FM\SearchBundle\Search\Search;
 use FM\SearchBundle\Search\Query\Result;
 
@@ -38,7 +40,10 @@ class FilteredSearchType extends AbstractType
             }
 
             try {
-                $config = $this->getChildConfig($filter, $options);
+                // TODO merge with form_options to preserve forwards compatibility
+                $fieldOptions = $options;
+
+                $config = $this->getChildConfig($filter, $fieldOptions);
                 $builder->add($config['child'], $config['type'], $config['options']);
             } catch (Exception\FormBuilderException $fbe) {
                 // couldn't create form child...
@@ -146,16 +151,16 @@ class FilteredSearchType extends AbstractType
                 'type'     => 'choice',
                 'label'    => $filter->getLabel() ?: sprintf($options['label_pattern'], $filter->getName()),
                 'start_options' => array(
-                    'choices' => $choices['start'],
+                    'choices' => $this->getTranslatedChoices($filter, $choices['start']),
                     'multiple' => false,
                     'expanded' => $expanded,
-                    'empty_value' => ''
+                    'empty_value' => false
                 ),
                 'end_options' => array(
-                    'choices' => $choices['end'],
+                    'choices' => $this->getTranslatedChoices($filter, $choices['end']),
                     'multiple' => false,
                     'expanded' => $expanded,
-                    'empty_value' => ''
+                    'empty_value' => false
                 ),
                 'mapped'   => false,
                 'required' => false,
@@ -180,24 +185,39 @@ class FilteredSearchType extends AbstractType
         $result = isset($options['result']) ? $options['result'] : null;
 
         // use facet results
-        $facetResult = null;
+        $counts = null;
         $facet = $filter->getFacet();
         if ($facet && $result) {
             $facets = $result->getFacets();
 
             // TODO if Solarium ever makes it easy to extend the response parser, inject this code somehow
             // see https://github.com/basdenooijer/solarium/issues/145
-            $facetResult = array();
-            foreach ($facets->getFacet($facet->getName())->getValues() as $value => $count) {
+            $counts = array();
+            $facetResult = $facets->getFacet($facet->getName());
+            $values = $facetResult->getValues();
+            foreach ($values as $value => $count) {
                 if (in_array($value, array('true', 'false'))) {
                     $value = $value === 'true';
                 }
 
-                $facetResult[$value] = $count;
+                $counts[$value] = $count;
+            }
+
+            if ($facet->getType() instanceof FacetType\Range) {
+                // add before/after counts
+                reset($values);
+                if ($before = $facetResult->getBefore()) {
+                    $counts[key($values)] += $before;
+                }
+
+                end($values);
+                if ($after = $facetResult->getAfter()) {
+                    $counts[key($values)] += $after;
+                }
             }
         }
 
-        $choices = $this->getChoices($filter, $facetResult);
+        $choices = $this->getChoices($filter, $counts);
 
         if (empty($choices) && !$this->allowEmptyChoices($filter)) {
             throw new Exception\NoChoicesException;
@@ -224,7 +244,8 @@ class FilteredSearchType extends AbstractType
         // set facet options
         if ($facetResult !== null) {
             $config['type'] = 'faceted_choice';
-            $config['options']['facet_result'] = $facetResult;
+            $config['options']['facet'] = $facet;
+            $config['options']['facet_result'] = $counts;
         }
 
         // set empty value for selects
@@ -291,7 +312,7 @@ class FilteredSearchType extends AbstractType
         $resolver->setDefaults(array(
             'csrf_protection' => false,
             'translation_domain' => 'forms',
-            'label_pattern' => '%s',
+            'label_pattern' => '%s'
         ));
 
         $resolver->setRequired(array(
