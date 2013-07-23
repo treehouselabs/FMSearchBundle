@@ -242,7 +242,7 @@ class FilteredSearchType extends AbstractType
         );
 
         // set facet options
-        if ($facetResult !== null) {
+        if ($counts !== null) {
             $config['type'] = 'faceted_choice';
             $config['options']['facet'] = $facet;
             $config['options']['facet_result'] = $counts;
