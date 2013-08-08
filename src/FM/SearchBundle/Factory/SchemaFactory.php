@@ -88,6 +88,7 @@ class SchemaFactory
 
                     $schema = $this->builder->buildSchema($name, $reflClass, $strategy);
                     $schema->setRepositoryClass($repositoryClass);
+                    $schema->setEntityClass($class);
 
                     if (array_key_exists($name, $this->builderPasses)) {
                         foreach ($this->builderPasses[$name] as $pass) {

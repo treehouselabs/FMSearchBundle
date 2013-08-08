@@ -30,6 +30,11 @@ class Schema
     private $repositoryClass;
 
     /**
+     * @var string
+     */
+    private $entityClass;
+
+    /**
      * @param string $name
      */
     public function __construct($name)
@@ -137,5 +142,21 @@ class Schema
     public function getRepositoryClass()
     {
         return $this->repositoryClass;
+    }
+
+    /**
+     * @param string $entityClass
+     */
+    public function setEntityClass($entityClass)
+    {
+        $this->entityClass = $entityClass;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityClass()
+    {
+        return $this->entityClass;
     }
 }
