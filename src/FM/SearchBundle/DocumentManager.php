@@ -2,6 +2,8 @@
 
 namespace FM\SearchBundle;
 
+use FM\SearchBundle\Event\CommitEvent;
+use FM\SearchBundle\Event\UpdateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
@@ -344,27 +346,48 @@ class DocumentManager
             $schemas = array_keys($this->updates);
         }
 
-        foreach ($schemas as $schema) {
+        // preCommit
+        $event = new CommitEvent($schemas, $this);
+        $this->eventDispatcher->dispatch(SearchEvents::PRE_COMMIT, $event);
 
+        foreach ($schemas as $schema) {
             if (!($schema instanceof Schema)) {
                 $schema = $this->getSchema($schema);
             }
+
+            $documents = array();
 
             $schemaName = $schema->getName();
 
             // add dirty documents first
             if (!empty($this->dirtyMap[$schemaName])) {
                 $update = $this->getUpdate($schema);
-                $update->addDocuments(array_values($this->dirtyMap[$schemaName]));
+
+                $documents = array_values($this->dirtyMap[$schemaName]);
+
+                foreach($documents as $document) {
+                    $event = new UpdateEvent($document, $this);
+                    $this->eventDispatcher->dispatch(SearchEvents::PRE_UPDATE, $event);
+                }
+
+                $update->addDocuments($documents);
             }
 
             if (array_key_exists($schemaName, $this->updates)) {
                 $this->updates[$schemaName]->addCommit();
                 $this->executeUpdate($schema);
+
+                foreach($documents as $document) {
+                    $event = new UpdateEvent($document, $this);
+                    $this->eventDispatcher->dispatch(SearchEvents::POST_UPDATE, $event);
+                }
             }
 
             unset($this->dirtyMap[$schemaName]);
         }
+
+        $event = new CommitEvent($schemas, $this);
+        $this->eventDispatcher->dispatch(SearchEvents::POST_COMMIT, $event);
     }
 
     /**
