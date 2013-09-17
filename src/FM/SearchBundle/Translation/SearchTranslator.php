@@ -144,8 +144,15 @@ class SearchTranslator
 
         foreach ($values as $name => $value) {
             if (!empty($value)) {
-                $filter = $this->getFilter($name);
-                $placeholders[$filter->getName()] = $this->humanizeFilter($filter, $value);
+                try {
+                    $filter = $this->getFilter($name);
+                    $placeholders[$filter->getName()] = $this->humanizeFilter($filter, $value);
+                } catch (\OutOfBoundsException $e) {
+                    // Ignore this:
+                    // No filter with the name "neighbourhood_id" defined. Please add the filter using
+                    // addFilter or setSearch
+                }
+
             }
         }
 
