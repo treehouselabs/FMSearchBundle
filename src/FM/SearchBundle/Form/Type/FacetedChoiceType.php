@@ -44,6 +44,19 @@ class FacetedChoiceType extends AbstractType
             }
 
             return $retval;
+        } elseif ($facet->getCountType() === Facet::COUNT_TYPE_INVERSED_CUMULATIVE) {
+            $retval = 0;
+
+            foreach (array_reverse(array_keys($facetResult)) as $data) {
+                $count = $facetResult[$data];
+                $retval += $count;
+
+                if ($data === $choice->data) {
+                    break;
+                }
+            }
+
+            return $retval;
         }
     }
 

@@ -12,13 +12,19 @@ class Facet
     /**
      * Use facet counts as returned by Solr
      */
-    const COUNT_TYPE_EXACT      = 'exact';
+    const COUNT_TYPE_EXACT               = 'exact';
 
     /**
      * Add facet counts on each value, creating cumulative counts. Useful for
+     * facets like "1 or less, 10 or less, 20 or less, etc".
+     */
+    const COUNT_TYPE_CUMULATIVE          = 'cumulative';
+
+    /**
+     * Add facet counts on each value, creating inversed cumulative counts. Useful for
      * facets like "1 or more, 10 or more, 20 or more, etc".
      */
-    const COUNT_TYPE_CUMULATIVE = 'cumulative';
+    const COUNT_TYPE_INVERSED_CUMULATIVE = 'inversed_cumulative';
 
     protected $type;
     protected $name;
@@ -62,7 +68,11 @@ class Facet
 
     public function setCountType($type)
     {
-        $types = array(self::COUNT_TYPE_EXACT, self::COUNT_TYPE_CUMULATIVE);
+        $types = array(
+            self::COUNT_TYPE_EXACT,
+            self::COUNT_TYPE_CUMULATIVE,
+            self::COUNT_TYPE_INVERSED_CUMULATIVE
+        );
 
         if (!in_array($type, $types)) {
             throw new \InvalidArgumentException(sprintf('One of %s count types is expected', json_encode($types)));

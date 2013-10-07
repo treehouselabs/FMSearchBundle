@@ -40,8 +40,14 @@ class FilteredSearchType extends AbstractType
             }
 
             try {
+                $filterConfig = $filter->getConfig();
+                $formOptions = isset($filterConfig['form']) ? $filterConfig['form'] : array();
+
                 // TODO merge with form_options to preserve forwards compatibility
-                $fieldOptions = $options;
+                $fieldOptions = array_merge(
+                    $options,
+                    $formOptions
+                );
 
                 $config = $this->getChildConfig($filter, $fieldOptions);
                 $builder->add($config['child'], $config['type'], $config['options']);
@@ -243,7 +249,7 @@ class FilteredSearchType extends AbstractType
 
         // set facet options
         if ($counts !== null) {
-            $config['type'] = 'faceted_choice';
+            $config['type'] = isset($options['type']) ? $options['type'] : 'faceted_choice';
             $config['options']['facet'] = $facet;
             $config['options']['facet_result'] = $counts;
         }
