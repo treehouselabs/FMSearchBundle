@@ -88,6 +88,10 @@ class FilteredSearchType extends AbstractType
             return $this->getHiddenFilterConfig($filter, $options);
         }
 
+        if ($filter->getConfig()->get('render') === 'choice') {
+            return $this->getChoiceFilterConfig($filter, $options);
+        }
+
         if ($filter->getField()->getType() instanceof FieldType\String) {
             return $this->getTextFilterConfig($filter, $options);
         }
