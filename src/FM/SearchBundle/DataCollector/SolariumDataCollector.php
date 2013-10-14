@@ -11,10 +11,11 @@ use Solarium\Core\Event\Events;
 use Solarium\Core\Event\PreExecuteRequest;
 use Solarium\Core\Event\PostExecuteRequest;
 
-class SolariumDataCollector extends Plugin implements DataCollectorInterface
+class SolariumDataCollector extends Plugin implements DataCollectorInterface, \Serializable
 {
     private $queries = array();
     private $times = array();
+    private $data = array();
 
     /**
      * Registers event listeners
@@ -81,5 +82,15 @@ class SolariumDataCollector extends Plugin implements DataCollectorInterface
     public function getName()
     {
         return 'solr';
+    }
+
+    public function serialize()
+    {
+        return serialize($this->data);
+    }
+
+    public function unserialize($data)
+    {
+        $this->data = unserialize($data);
     }
 }
