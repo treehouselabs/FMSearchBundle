@@ -39,7 +39,7 @@ class CleanupCommand extends CommandExtra
 
         $client = $dm->getClient();
 
-        $toId = function($doc) {
+        $toIds = function($doc) {
             return (int) $doc['id'];
         };
 
@@ -49,15 +49,17 @@ class CleanupCommand extends CommandExtra
             $meta = $em->getClassMetadata($entity);
             $repo = $em->getRepository($meta->getName());
 
-            $schema = $dm->getSchema($meta->getName());
-            $endpoint = $dm->getEndpoint($schema);
+            $schema    = $dm->getSchema($meta->getName());
+            $endpoint  = $dm->getEndpoint($schema);
+            $uniqueKey = $schema->getUniqueKeyField()->getName();
+            $fields    = array_unique(array('id', $uniqueKey));
 
             $s = 0;
             while (true) {
                 // create manual query to get all properties in the index
                 $query = $client->createSelect();
                 $query->setQuery('*');
-                $query->setFields(array('id'));
+                $query->setFields($fields);
                 $query->setStart($s);
                 $query->setRows($batchSize);
 
@@ -69,21 +71,26 @@ class CleanupCommand extends CommandExtra
 
                 $s += $resultset->count();
 
-                // id's in index
-                $ids = array_map($toId, $resultset->getDocuments());
+                // map id's => unique keys
+                $map = array();
+                foreach ($resultset->getDocuments() as $document) {
+                    $map[(int) $document['id']] = $document[$uniqueKey];
+                }
 
                 // check which id's we can actually find in the database
                 $qb = $repo->createQueryBuilder('x');
                 $qb->select('x.id');
                 $qb->where('x.id IN (:ids)');
-                $qb->setParameter('ids', $ids);
+                $qb->setParameter('ids', array_keys($map));
 
                 $result = $qb->getQuery()->getArrayResult();
-                $foundIds = array_map($toId, $result);
+
+                $ids = array_map($toIds, $resultset->getDocuments());
+                $foundIds = array_map($toIds, $result);
 
                 foreach (array_diff($ids, $foundIds) as $notFoundId) {
                     $output->writeln(sprintf('<fg=red>- %d', $notFoundId));
-                    $dm->removeById($schema, $notFoundId);
+                    $dm->removeById($schema, $map[$notFoundId]);
                 }
 
                 $dm->commit();
