@@ -15,16 +15,25 @@ class IndexCommand extends CommandExtra
         $this
             ->setName('search:index')
             ->setDescription('Indexes entities from database into search engine')
-            ->addArgument('entity', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'The entit[y|ies] to index. Can be any form that the entitymanager accepts.')
-            ->addOption('where', null, InputOption::VALUE_OPTIONAL, 'Optional where clause to use in DQL (use "x" as root alias).')
-            ->preventLogging()
-        ;
+            ->addArgument(
+                'entity',
+                InputArgument::REQUIRED | InputArgument::IS_ARRAY,
+                'The entit[y|ies] to index. Can be any form that the entitymanager accepts.'
+            )
+            ->addOption(
+                'where',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Optional where clause to use in DQL (use "x" as root alias).'
+            );
+
+        $this->disableLoggers();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $entities = $input->getArgument('entity');
-        $where = $input->getOption('where');
+        $where    = $input->getOption('where');
 
         $this->index($entities, $where, $output);
 
@@ -33,14 +42,14 @@ class IndexCommand extends CommandExtra
 
     protected function index(array $entities, $where = null, OutputInterface $output)
     {
-        $em = $this->getEntityManager();
+        $em      = $this->getEntityManager();
         $manager = $this->get('fm_search.document_manager');
 
-        $i = 0;
+        $i         = 0;
         $batchSize = 50;
 
         foreach ($entities as $entity) {
-            $meta = $em->getClassMetadata($entity);
+            $meta       = $em->getClassMetadata($entity);
             $identifier = $meta->getSingleIdentifierFieldName();
 
             while (true) {
@@ -70,7 +79,9 @@ class IndexCommand extends CommandExtra
 
                     try {
                         $manager->index($object);
-                        $output->writeln(sprintf('%s: %s', json_encode(array_values($id)), $this->entityToString($object)));
+                        $output->writeln(
+                            sprintf('%s: %s', json_encode(array_values($id)), $this->entityToString($object))
+                        );
                     } catch (\Exception $e) {
                         $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
                     }
