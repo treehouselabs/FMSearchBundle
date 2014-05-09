@@ -16,18 +16,20 @@ class DeleteCommand extends CommandExtra
         $this
             ->setName('search:delete')
             ->setDescription('Deletes entities from search engine index')
-            ->setDefinition(array(
-                new InputArgument('entity', InputArgument::REQUIRED, 'The entity to delete. Can be any form that the entitymanager accepts.'),
-                new InputOption('where', null, InputOption::VALUE_OPTIONAL, 'Optional where clause to use in DQL (use "x" as root alias)'),
-            ))
-            ->preventLogging()
-        ;
+            ->setDefinition(
+                [
+                    new InputArgument('entity', InputArgument::REQUIRED, 'The entity to delete. Can be any form that the entitymanager accepts.'),
+                    new InputOption('where', null, InputOption::VALUE_OPTIONAL, 'Optional where clause to use in DQL (use "x" as root alias)'),
+                ]
+            );
+
+        $this->disableLoggers();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $entity = $input->getArgument('entity');
-        $where = $input->getOption('where');
+        $where  = $input->getOption('where');
 
         $this->delete($entity, $where, $output);
 
@@ -36,13 +38,13 @@ class DeleteCommand extends CommandExtra
 
     protected function delete($entity, $where = null, OutputInterface $output)
     {
-        $em = $this->getEntityManager();
+        $em      = $this->getEntityManager();
         $manager = $this->get('fm_search.document_manager');
 
-        $i = 0;
+        $i         = 0;
         $batchSize = 50;
 
-        $meta = $em->getClassMetadata($entity);
+        $meta       = $em->getClassMetadata($entity);
         $identifier = $meta->getSingleIdentifierFieldName();
 
         while (true) {
@@ -98,6 +100,8 @@ class DeleteCommand extends CommandExtra
 
     protected function entityToString($entity)
     {
-        return method_exists($entity, '__toString') ? (string) $entity : get_class($entity) . '@' . spl_object_hash($entity);
+        return method_exists($entity, '__toString') ? (string)$entity : get_class($entity) . '@' . spl_object_hash(
+                $entity
+            );
     }
 }
