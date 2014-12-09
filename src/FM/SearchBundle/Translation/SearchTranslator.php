@@ -2,7 +2,7 @@
 
 namespace FM\SearchBundle\Translation;
 
-use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 use FM\SearchBundle\Mapping\Filter;
 use FM\SearchBundle\Search\Search;
@@ -35,10 +35,10 @@ class SearchTranslator
     }
 
     /**
-     * @param Translator $translator
-     * @param string     $defaultDomain
+     * @param TranslatorInterface $translator
+     * @param string              $defaultDomain
      */
-    public function setTranslator(Translator $translator, $defaultDomain = null)
+    public function setTranslator(TranslatorInterface $translator, $defaultDomain = null)
     {
         $this->translator = $translator;
 
