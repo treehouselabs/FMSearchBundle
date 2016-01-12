@@ -2,10 +2,9 @@
 
 namespace FM\SearchBundle\Search\Query;
 
+use Solarium\QueryType\Select\Result\FacetSet;
 use Solarium\QueryType\Select\Result\Result as BaseResult;
-
 use FM\SearchBundle\Search\Hydration\Hydrator;
-
 use IteratorAggregate;
 use Countable;
 
@@ -27,7 +26,7 @@ class Result implements IteratorAggregate, Countable
     /**
      * Returns the number of results for this search.
      *
-     * @return integer
+     * @return int
      */
     public function count()
     {
@@ -37,7 +36,7 @@ class Result implements IteratorAggregate, Countable
     /**
      * Returns the total number of results (ie: for all pages).
      *
-     * @return integer
+     * @return int
      */
     public function total()
     {
@@ -59,9 +58,9 @@ class Result implements IteratorAggregate, Countable
     }
 
     /**
-     * IteratorAggregate implementation
+     * IteratorAggregate implementation.
      *
-     * @return ArrayIterator
+     * @return \ArrayIterator
      */
     public function getIterator()
     {
@@ -71,7 +70,7 @@ class Result implements IteratorAggregate, Countable
     /**
      * Gets facets for the search.
      *
-     * @return Solarium\QueryType\Select\Result\FacetSet
+     * @return FacetSet
      */
     public function getFacets()
     {

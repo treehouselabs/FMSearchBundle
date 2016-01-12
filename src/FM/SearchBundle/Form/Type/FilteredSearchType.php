@@ -5,9 +5,7 @@ namespace FM\SearchBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use FM\SearchBundle\Form\Exception;
-use FM\SearchBundle\Form\Type\FacetedChoiceType;
 use FM\SearchBundle\Mapping\Filter;
 use FM\SearchBundle\Mapping\Field\Type as FieldType;
 use FM\SearchBundle\Mapping\Facet;
@@ -58,11 +56,12 @@ class FilteredSearchType extends AbstractType
     }
 
     /**
-     * Skips filter if the `render` option is set to false
+     * Skips filter if the `render` option is set to false.
      *
-     * @param  Filter  $filter  The filter
-     * @param  array   $options The form options
-     * @return boolean
+     * @param Filter $filter  The filter
+     * @param array  $options The form options
+     *
+     * @return bool
      */
     protected function skipFilter(Filter $filter, array $options)
     {
@@ -72,10 +71,11 @@ class FilteredSearchType extends AbstractType
     }
 
     /**
-     * Returns form child config for a filter
+     * Returns form child config for a filter.
      *
-     * @param  Filter $filter  The filter
-     * @param  array  $options The form options
+     * @param Filter $filter  The filter
+     * @param array  $options The form options
+     *
      * @return array
      */
     protected function getChildConfig(Filter $filter, array $options)
@@ -92,7 +92,7 @@ class FilteredSearchType extends AbstractType
             return $this->getChoiceFilterConfig($filter, $options);
         }
 
-        if ($filter->getField()->getType() instanceof FieldType\String) {
+        if ($filter->getField()->getType() instanceof FieldType\StringType) {
             return $this->getTextFilterConfig($filter, $options);
         }
 
@@ -100,10 +100,11 @@ class FilteredSearchType extends AbstractType
     }
 
     /**
-     * Returns form child config for a text-based filter
+     * Returns form child config for a text-based filter.
      *
-     * @param  Filter $filter  The filter
-     * @param  array  $options The form options
+     * @param Filter $filter  The filter
+     * @param array  $options The form options
+     *
      * @return array
      */
     protected function getTextFilterConfig(Filter $filter, array $options)
@@ -112,18 +113,19 @@ class FilteredSearchType extends AbstractType
             'child' => $filter->getName(),
             'type' => 'text',
             'options' => array(
-                'label'    => $filter->getLabel() ?: sprintf($options['label_pattern'], $filter->getName()),
-                'mapped'   => false,
-                'required' => false
-            )
+                'label' => $filter->getLabel() ?: sprintf($options['label_pattern'], $filter->getName()),
+                'mapped' => false,
+                'required' => false,
+            ),
         );
     }
 
     /**
-     * Returns form child config for a hidden filter
+     * Returns form child config for a hidden filter.
      *
-     * @param  Filter $filter  The filter
-     * @param  array  $options The form options
+     * @param Filter $filter  The filter
+     * @param array  $options The form options
+     *
      * @return array
      */
     protected function getHiddenFilterConfig(Filter $filter, array $options)
@@ -132,17 +134,18 @@ class FilteredSearchType extends AbstractType
             'child' => $filter->getName(),
             'type' => 'hidden',
             'options' => array(
-                'mapped'   => false,
-                'required' => false
-            )
+                'mapped' => false,
+                'required' => false,
+            ),
         );
     }
 
     /**
-     * Returns form child config for a range filter
+     * Returns form child config for a range filter.
      *
-     * @param  Filter $filter  The filter
-     * @param  array  $options The form options
+     * @param Filter $filter  The filter
+     * @param array  $options The form options
+     *
      * @return array
      */
     protected function getRangeFilterConfig(Filter $filter, array $options)
@@ -151,40 +154,41 @@ class FilteredSearchType extends AbstractType
         $choices = $this->getChoices($filter);
 
         if (empty($choices) && !$this->allowEmptyChoices($filter)) {
-            throw new Exception\NoChoicesException;
+            throw new Exception\NoChoicesException();
         }
 
         $config = array(
             'child' => $filter->getName(),
             'type' => 'range',
             'options' => array(
-                'type'     => 'choice',
-                'label'    => $filter->getLabel() ?: sprintf($options['label_pattern'], $filter->getName()),
+                'type' => 'choice',
+                'label' => $filter->getLabel() ?: sprintf($options['label_pattern'], $filter->getName()),
                 'start_options' => array(
                     'choices' => $this->getTranslatedChoices($filter, $choices['start']),
                     'multiple' => false,
                     'expanded' => $expanded,
-                    'empty_value' => false
+                    'empty_value' => false,
                 ),
                 'end_options' => array(
                     'choices' => $this->getTranslatedChoices($filter, $choices['end']),
                     'multiple' => false,
                     'expanded' => $expanded,
-                    'empty_value' => false
+                    'empty_value' => false,
                 ),
-                'mapped'   => false,
+                'mapped' => false,
                 'required' => false,
-            )
+            ),
         );
 
         return $config;
     }
 
     /**
-     * Returns form child config for a choice-based filter
+     * Returns form child config for a choice-based filter.
      *
-     * @param  Filter $filter  The filter
-     * @param  array  $options The form options
+     * @param Filter $filter  The filter
+     * @param array  $options The form options
+     *
      * @return array
      */
     protected function getChoiceFilterConfig(Filter $filter, array $options)
@@ -213,7 +217,7 @@ class FilteredSearchType extends AbstractType
                 $counts[$value] = $count;
             }
 
-            if ($facet->getType() instanceof FacetType\Range) {
+            if ($facet->getType() instanceof FacetType\RangeType) {
                 // add before/after counts
                 reset($values);
                 if ($before = $facetResult->getBefore()) {
@@ -230,7 +234,7 @@ class FilteredSearchType extends AbstractType
         $choices = $this->getChoices($filter, $counts);
 
         if (empty($choices) && !$this->allowEmptyChoices($filter)) {
-            throw new Exception\NoChoicesException;
+            throw new Exception\NoChoicesException();
         }
 
         // empty value for radio buttons
@@ -242,13 +246,13 @@ class FilteredSearchType extends AbstractType
             'child' => $filter->getName(),
             'type' => 'choice',
             'options' => array(
-                'label'    => $filter->getLabel() ?: sprintf($options['label_pattern'], $filter->getName()),
-                'choices'  => $choices,
+                'label' => $filter->getLabel() ?: sprintf($options['label_pattern'], $filter->getName()),
+                'choices' => $choices,
                 'multiple' => $multiple,
                 'expanded' => $this->getExpanded($filter),
-                'mapped'   => false,
-                'required' => false
-            )
+                'mapped' => false,
+                'required' => false,
+            ),
         );
 
         // set facet options
@@ -290,7 +294,7 @@ class FilteredSearchType extends AbstractType
 
         // Use yes/no checkboxes for booleans. A single checkbox does not support
         // negation ("no") queries, hence both options.
-        if ($filter->getField()->getType() instanceof FieldType\Boolean) {
+        if ($filter->getField()->getType() instanceof FieldType\BooleanType) {
             return $this->getTranslatedChoices($filter, array(
                 1 => 'yes',
                 0 => 'no',
@@ -322,15 +326,15 @@ class FilteredSearchType extends AbstractType
         $resolver->setDefaults(array(
             'csrf_protection' => false,
             'translation_domain' => 'forms',
-            'label_pattern' => '%s'
+            'label_pattern' => '%s',
         ));
 
         $resolver->setRequired(array(
-            'search'
+            'search',
         ));
 
         $resolver->setOptional(array(
-            'result'
+            'result',
         ));
     }
 

@@ -3,14 +3,12 @@
 namespace FM\SearchBundle\Factory;
 
 use Doctrine\Common\Annotations\Reader;
-
 use FM\SearchBundle\Mapping\Annotation;
 use FM\SearchBundle\Mapping\Field;
 use FM\SearchBundle\Mapping\Registry;
 use FM\SearchBundle\Mapping\Accessor\Type as AccessorType;
 use FM\SearchBundle\Mapping\Schema;
 use FM\SearchBundle\Mapping\Strategy\NamingStrategy;
-
 use ReflectionClass;
 
 class SchemaBuilder
@@ -27,7 +25,8 @@ class SchemaBuilder
     /**
      * Returns the @Schema annotation of a class, if defined.
      *
-     * @param  ReflectionClass       $reflClass
+     * @param ReflectionClass $reflClass
+     *
      * @return Annotation\Annotation
      */
     public function getSchemaAnnotation(ReflectionClass $reflClass)
@@ -42,9 +41,10 @@ class SchemaBuilder
     /**
      * Builds a new Schema instance, based on a class' annotations.
      *
-     * @param  string          $name     The schema name
-     * @param  ReflectionClass $class    The class
-     * @param  NamingStrategy  $strategy Naming strategy to use
+     * @param string          $name     The schema name
+     * @param ReflectionClass $class    The class
+     * @param NamingStrategy  $strategy Naming strategy to use
+     *
      * @return Schema
      */
     public function buildSchema($name, ReflectionClass $class, NamingStrategy $strategy)
@@ -85,7 +85,8 @@ class SchemaBuilder
     /**
      * Validates a schema.
      *
-     * @param  Schema          $schema
+     * @param Schema $schema
+     *
      * @throws \LogicException When schema is invalid
      */
     public function validateSchema(Schema $schema)
@@ -113,7 +114,8 @@ class SchemaBuilder
      * @param string $name         The field name
      * @param string $accessorType The accessor key, as defined in the registry
      * @param string $propertyName Optional property name which the field is
-     *                              mapped to
+     *                             mapped to
+     *
      * @return Field
      */
     public function createField($type, $name, $accessorType = null, $propertyName = null)
@@ -157,7 +159,8 @@ class SchemaBuilder
     /**
      * Serializes schemas. See serializeSchema for the implementation.
      *
-     * @param  array $schemas
+     * @param array $schemas
+     *
      * @return array An array with the serialized schemas
      */
     public function serializeSchemas(array $schemas)
@@ -178,7 +181,8 @@ class SchemaBuilder
      * serialized. When unserializing, the accessor type is looked up in the
      * registry and set into the field again.
      *
-     * @param  Schema $schema
+     * @param Schema $schema
+     *
      * @return string
      */
     public function serializeSchema(Schema $schema)
@@ -196,7 +200,8 @@ class SchemaBuilder
     /**
      * Unserializes an array of schemas.
      *
-     * @param  array $schemas
+     * @param array $schemas
+     *
      * @return array An array with the unserialized schemas
      */
     public function unserializeSchemas(array $schemas)
@@ -214,7 +219,8 @@ class SchemaBuilder
      * Unserializes a schema. Resets the accessors of the fields. See
      * serializeSchema.
      *
-     * @param  Schema $schema
+     * @param Schema $schema
+     *
      * @return Schema
      */
     public function unserializeSchema(Schema $schema)

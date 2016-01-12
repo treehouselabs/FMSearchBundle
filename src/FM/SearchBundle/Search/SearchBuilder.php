@@ -40,6 +40,11 @@ class SearchBuilder implements SearchBuilderInterface
     private $filters = array();
 
     /**
+     * @var Registry
+     */
+    private $registry;
+
+    /**
      * @param Registry                 $registry
      * @param Schema                   $schema
      * @param array                    $options
@@ -202,7 +207,6 @@ class SearchBuilder implements SearchBuilderInterface
         $filter = new Filter($name, $field, $filterType, $options);
 
         if (!empty($facetConfig)) {
-
             $type = $facetConfig['type'];
             $count = $facetConfig['count'];
             $options = $facetConfig['options'];

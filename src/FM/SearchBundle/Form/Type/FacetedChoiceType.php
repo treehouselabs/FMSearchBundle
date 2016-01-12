@@ -6,9 +6,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
-use Solarium\QueryType\Select\Result\Facet\Field as FacetResult;
-
 use FM\SearchBundle\Mapping\Facet;
 
 class FacetedChoiceType extends AbstractType
@@ -90,7 +87,7 @@ class FacetedChoiceType extends AbstractType
         ));
 
         $resolver->setAllowedTypes(array(
-            'facet' => 'FM\SearchBundle\Mapping\Facet'
+            'facet' => 'FM\SearchBundle\Mapping\Facet',
         ));
     }
 }

@@ -9,7 +9,14 @@ use Solarium\QueryType\Select\Result\AbstractDocument;
  */
 class Document
 {
+    /**
+     * @var Schema
+     */
     private $schema;
+
+    /**
+     * @var AbstractDocument
+     */
     private $document;
 
     /**
@@ -49,7 +56,7 @@ class Document
     }
 
     /**
-     * @return The unique key value if set, an object hash otherwise.
+     * @return string The unique key value if set, an object hash otherwise.
      */
     public function __toString()
     {
