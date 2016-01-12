@@ -4,7 +4,7 @@ namespace FM\SearchBundle\Mapping\Field\Type;
 
 use FM\SearchBundle\Mapping\Field\Type;
 
-class Boolean implements Type
+class BooleanType implements Type
 {
     public function convertToPhpValue($value)
     {
