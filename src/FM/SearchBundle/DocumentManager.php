@@ -4,12 +4,12 @@ namespace FM\SearchBundle;
 
 use FM\SearchBundle\Event\CommitEvent;
 use FM\SearchBundle\Event\UpdateEvent;
+use FM\SearchBundle\Mapping\Field\Type\LocationType;
+use FM\SearchBundle\Repository\DocumentRepository;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
-
 use Solarium\Client;
-
 use FM\SearchBundle\Event\SearchEvents;
 use FM\SearchBundle\Event\PersistEvent;
 use FM\SearchBundle\Event\SetFieldsEvent;
@@ -31,21 +31,21 @@ class DocumentManager
     private $logger;
     private $eventDispatcher;
 
-    private $schemas        = array();
-    private $schemaClasses  = array();
-    private $repositories   = array();
-    private $updates        = array();
-    private $documentMap    = array();
-    private $schemaMap      = array();
-    private $dirtyMap       = array();
+    private $schemas = array();
+    private $schemaClasses = array();
+    private $repositories = array();
+    private $updates = array();
+    private $documentMap = array();
+    private $schemaMap = array();
+    private $dirtyMap = array();
 
-    private $hydrators      = array();
+    private $hydrators = array();
     private $hydrationModes = array(
-        Query::HYDRATE_ARRAY => '\FM\SearchBundle\Search\Hydration\ArrayHydrator'
+        Query::HYDRATE_ARRAY => '\FM\SearchBundle\Search\Hydration\ArrayHydrator',
     );
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Client          $client
      * @param SchemaFactory   $schemaFactory
@@ -57,7 +57,7 @@ class DocumentManager
         $this->schemaFactory = $schemaFactory;
         $this->searchFactory = $searchFactory;
         $this->logger = $logger;
-        $this->eventDispatcher = new EventDispatcher;
+        $this->eventDispatcher = new EventDispatcher();
     }
 
     /**
@@ -82,7 +82,8 @@ class DocumentManager
      * Returns the endpoint used by Solarium for the supplied schema. Each
      * schema is mapped to an endpoint.
      *
-     * @param  mixed  $schema A Schema instance or schema name
+     * @param mixed $schema A Schema instance or schema name
+     *
      * @return string
      */
     public function getEndpoint($schema = null)
@@ -105,7 +106,8 @@ class DocumentManager
     /**
      * Returns the schema for a given name or class.
      *
-     * @param  string $schema The schema name, or the class this schema is mapped to.
+     * @param string $schema The schema name, or the class this schema is mapped to.
+     *
      * @return Schema
      */
     public function getSchema($schema)
@@ -128,8 +130,9 @@ class DocumentManager
     /**
      * Gets the repository for a schema.
      *
-     * @param  string                                        $schema The schema name, or the class this schema is mapped to.
-     * @return FM\SearchBundle\Repository\DocumentRepository
+     * @param string $schema The schema name, or the class this schema is mapped to.
+     *
+     * @return DocumentRepository
      */
     public function getRepository($schema)
     {
@@ -150,7 +153,8 @@ class DocumentManager
      * query exists yet, a new one is created. The update query can be used to
      * issue commands for Solr, such as updating and deleting documents.
      *
-     * @param  Schema                                 $schema
+     * @param Schema $schema
+     *
      * @return \Solarium\QueryType\Update\Query\Query
      */
     protected function getUpdate(Schema $schema)
@@ -178,7 +182,8 @@ class DocumentManager
     /**
      * Returns the hydrator for give mode.
      *
-     * @param  string   $hydrationMode
+     * @param string $hydrationMode
+     *
      * @return Hydrator
      */
     public function getHydrator($hydrationMode)
@@ -193,9 +198,10 @@ class DocumentManager
     /**
      * Maps a hydration mode to a hydrator class.
      *
-     * @param  string         $mode
-     * @param  string         $class
-     * @throws LogicException if mode already exists
+     * @param string $mode
+     * @param string $class
+     *
+     * @throws \LogicException if mode already exists
      */
     public function registerHydrationMode($mode, $class)
     {
@@ -212,9 +218,10 @@ class DocumentManager
     /**
      * Maps a hydration mode to a hydrator instance.
      *
-     * @param  Hydrator       $hydrator
-     * @param  string         $mode
-     * @throws LogicException if mode already exists
+     * @param Hydrator $hydrator
+     * @param string   $mode
+     *
+     * @throws \LogicException if mode already exists
      */
     public function registerHydrator(Hydrator $hydrator, $mode)
     {
@@ -232,7 +239,8 @@ class DocumentManager
     /**
      * Create a new instance for the given hydration mode.
      *
-     * @param  string                                     $hydrationMode
+     * @param string $hydrationMode
+     *
      * @return \FM\SearchBundle\Search\Hydration\Hydrator
      */
     public function createHydrator($hydrationMode)
@@ -245,7 +253,7 @@ class DocumentManager
     }
 
     /**
-     * Dispatches event
+     * Dispatches event.
      *
      * @param string $type  The event type
      * @param Event  $event The event
@@ -256,7 +264,7 @@ class DocumentManager
     }
 
     /**
-     * Adds listener to the internal event dispatcher
+     * Adds listener to the internal event dispatcher.
      *
      * @param string $type     The event type
      * @param mixed  $listener The listener
@@ -269,8 +277,9 @@ class DocumentManager
     /**
      * Checks if given class or instance is supported by the document manager.
      *
-     * @param  mixed   $class
-     * @return boolean
+     * @param mixed $class
+     *
+     * @return bool
      */
     public function supports($class)
     {
@@ -281,15 +290,16 @@ class DocumentManager
             $this->getSchema($class);
 
             return true;
-
-        } catch (\OutOfBoundsException $e) {}
+        } catch (\OutOfBoundsException $e) {
+        }
 
         return false;
     }
 
     /**
-     * @param  Document $document
-     * @return boolean
+     * @param Document $document
+     *
+     * @return bool
      */
     public function isManaged(Document $document)
     {
@@ -365,7 +375,7 @@ class DocumentManager
 
                 $documents = array_values($this->dirtyMap[$schemaName]);
 
-                foreach($documents as $document) {
+                foreach ($documents as $document) {
                     $event = new UpdateEvent($document, $this);
                     $this->eventDispatcher->dispatch(SearchEvents::PRE_UPDATE, $event);
                 }
@@ -377,7 +387,7 @@ class DocumentManager
                 $this->updates[$schemaName]->addCommit();
                 $this->executeUpdate($schema);
 
-                foreach($documents as $document) {
+                foreach ($documents as $document) {
                     $event = new UpdateEvent($document, $this);
                     $this->eventDispatcher->dispatch(SearchEvents::POST_UPDATE, $event);
                 }
@@ -394,8 +404,8 @@ class DocumentManager
      * Removes an entity from the index. Changes are only committed if you set
      * $andCommit to true, otherwise you have to call commit() manually.
      *
-     * @param object  $entity    The entity to remove.
-     * @param boolean $andCommit Issue commit right now
+     * @param object $entity    The entity to remove.
+     * @param bool   $andCommit Issue commit right now
      */
     public function remove($entity, $andCommit = false)
     {
@@ -413,7 +423,7 @@ class DocumentManager
      *
      * @param Schema|string $schema    The schema to use
      * @param string        $id        The document's id
-     * @param boolean       $andCommit Issue commit right now
+     * @param bool          $andCommit Issue commit right now
      */
     public function removeById($schema, $id, $andCommit = false)
     {
@@ -439,7 +449,7 @@ class DocumentManager
      *
      * @param Schema|string $schema    The schema to use
      * @param string        $query     The query
-     * @param boolean       $andCommit Issue commit right now
+     * @param bool          $andCommit Issue commit right now
      */
     public function removeByQuery($schema, $query, $andCommit = false)
     {
@@ -491,7 +501,8 @@ class DocumentManager
     /**
      * Creates a new document, based on the given schema.
      *
-     * @param  Schema   $schema
+     * @param Schema $schema
+     *
      * @return Document
      */
     public function createDocument(Schema $schema)
@@ -504,7 +515,8 @@ class DocumentManager
     /**
      * Creates a new query, based on a predefined search.
      *
-     * @param  Search $search
+     * @param Search $search
+     *
      * @return Query
      */
     public function createQuery(Search $search)
@@ -513,10 +525,11 @@ class DocumentManager
     }
 
     /**
-     * Creates a new search
+     * Creates a new search.
      *
-     * @param  SearchTypeInterface $searchType
-     * @return Schema              $schema
+     * @param SearchTypeInterface $searchType
+     *
+     * @return Schema $schema
      */
     public function createSearch(SearchTypeInterface $searchType, Schema $schema)
     {
@@ -528,8 +541,8 @@ class DocumentManager
      * Changes are only committed if you set $andCommit to true, otherwise you
      * have to call commit() manually.
      *
-     * @param object  $entity
-     * @param boolean $andCommit Issue commit right now
+     * @param object $entity
+     * @param bool   $andCommit Issue commit right now
      */
     public function index($entity, $andCommit = false)
     {
@@ -589,15 +602,16 @@ class DocumentManager
     /**
      * Sets the value for a field to the document.
      *
-     * @param  Document                 $document
-     * @param  Field                    $field
-     * @param  mixed                    $value
-     * @throws UnexpectedValueException When the supplied value doesn't match
-     *                                  the field's definition.
+     * @param Document $document
+     * @param Field    $field
+     * @param mixed    $value
+     *
+     * @throws \UnexpectedValueException When the supplied value doesn't match
+     *                                   the field's definition.
      */
     public function setFieldValue(Document $document, Field $field, $value)
     {
-        if (is_array($value) && !($field->getType() instanceof \FM\SearchBundle\Mapping\Field\Type\Location)) {
+        if (is_array($value) && !($field->getType() instanceof LocationType)) {
             if (!$field->isMultiValued()) {
                 throw new \UnexpectedValueException(sprintf(
                     'Got an array, but field "%s" is not multiValued',

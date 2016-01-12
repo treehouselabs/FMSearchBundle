@@ -19,7 +19,7 @@ class FileDriver implements DriverInterface
 
             foreach ($this->paths as $path) {
                 if (!is_dir($path)) {
-                    throw new LogicException(sprintf('"%s" is not a valid path', $path));
+                    throw new \LogicException(sprintf('"%s" is not a valid path', $path));
                 }
 
                 $iterator = new \RecursiveIteratorIterator(

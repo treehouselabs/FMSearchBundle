@@ -9,13 +9,44 @@ use FM\SearchBundle\Mapping\Field\Type;
 
 class Field
 {
+    /**
+     * @var Type
+     */
     private $type;
+
+    /**
+     * @var string
+     */
     private $name;
+
+    /**
+     * @var PropertyAccessorInterface
+     */
     private $accessor;
+
+    /**
+     * @var string
+     */
     private $accessorType;
+
+    /**
+     * @var string
+     */
     private $propertyPath;
+
+    /**
+     * @var float
+     */
     private $boost;
+
+    /**
+     * @var bool
+     */
     private $required;
+
+    /**
+     * @var bool
+     */
     private $multiValued;
 
     /**
@@ -37,15 +68,15 @@ class Field
     }
 
     /**
-     * @param string $type
+     * @param Type $type
      */
-    public function setType($type)
+    public function setType(Type $type)
     {
         $this->type = $type;
     }
 
     /**
-     * @return string
+     * @return Type
      */
     public function getType()
     {

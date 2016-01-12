@@ -2,8 +2,6 @@
 
 namespace FM\SearchBundle\Search\Query;
 
-use Solarium\Client;
-
 use FM\SearchBundle\DocumentManager;
 use FM\SearchBundle\Mapping\Filter;
 use FM\SearchBundle\Search\Search;
@@ -53,9 +51,10 @@ class Query
      * the same for all filters. But the filter is passed along, should you want
      * to change this on a per-filter base.
      *
-     * @param  Filter  $filter
-     * @param  mixed   $value
-     * @return boolean
+     * @param Filter $filter
+     * @param mixed  $value
+     *
+     * @return bool
      */
     protected function isValidValue(Filter $filter, $value)
     {
@@ -103,8 +102,9 @@ class Query
      * Binds values to this query. When preparing, the values will be applied
      * to the configured filters.
      *
-     * @param  array          $values
-     * @throws LogicException When query is already bound
+     * @param array $values
+     *
+     * @throws \LogicException When query is already bound
      */
     public function bind(array $values)
     {
@@ -129,7 +129,8 @@ class Query
     /**
      * Executes the search and returns the result.
      *
-     * @param  string $hydrationMode The hydration mode
+     * @param string $hydrationMode The hydration mode
+     *
      * @return Result
      */
     public function getResult($hydrationMode = self::HYDRATE_ARRAY)

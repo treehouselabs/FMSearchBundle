@@ -3,7 +3,6 @@
 namespace FM\SearchBundle\Translation;
 
 use Symfony\Component\Translation\TranslatorInterface;
-
 use FM\SearchBundle\Mapping\Filter;
 use FM\SearchBundle\Search\Search;
 
@@ -12,12 +11,34 @@ use FM\SearchBundle\Search\Search;
  */
 class SearchTranslator
 {
+    /**
+     * @var \Twig_Environment
+     */
     protected $twig;
+
+    /**
+     * @var Search
+     */
     protected $search;
+
+    /**
+     * @var array
+     */
     protected $filters = array();
+
+    /**
+     * @var TranslatorInterface
+     */
     protected $translator;
+
+    /**
+     * @var string
+     */
     protected $translationDomain;
 
+    /**
+     * @param \Twig_Environment $twig
+     */
     public function __construct(\Twig_Environment $twig)
     {
         $this->setTwig($twig);
@@ -26,7 +47,7 @@ class SearchTranslator
     /**
      * Clones Twig environment, and overrides loader with a string loader.
      *
-     * @param Twig_Environment $twig
+     * @param \Twig_Environment $twig
      */
     public function setTwig(\Twig_Environment $twig)
     {
@@ -72,8 +93,11 @@ class SearchTranslator
     }
 
     /**
-     * @param  string                $name
+     * @param string $name
+     *
      * @throws \OutOfBoundsException When filter doesn't exist
+     *
+     * @return Filter
      */
     public function getFilter($name)
     {
@@ -98,9 +122,10 @@ class SearchTranslator
      * Tries to translate the filter using the supplied translator. Filter
      * choices are translated using their respective label configurations.
      *
-     * @param  Filter $filter
-     * @param  mixed  $value
-     * @return array  Array containing the translated choices
+     * @param Filter $filter
+     * @param mixed  $value
+     *
+     * @return array Array containing the translated choices
      */
     public function humanizeFilter(Filter $filter, $value)
     {
@@ -135,7 +160,8 @@ class SearchTranslator
      * Translates values into readable/translated choices. Returns array with
      * exact/translated values, useful in translation functions.
      *
-     * @param  array $values
+     * @param array $values
+     *
      * @return array
      */
     public function getPlaceholders(array $values)
@@ -152,7 +178,6 @@ class SearchTranslator
                     // No filter with the name "neighbourhood_id" defined. Please add the filter using
                     // addFilter or setSearch
                 }
-
             }
         }
 
@@ -162,8 +187,9 @@ class SearchTranslator
     /**
      * Translates search values using the supplied text as a template.
      *
-     * @param  mixed  $text   Can be a string, or an instance of Twig_Template
-     * @param  array  $values
+     * @param mixed $text   Can be a string, or an instance of Twig_Template
+     * @param array $values
+     *
      * @return string
      */
     public function translate($text, array $values)

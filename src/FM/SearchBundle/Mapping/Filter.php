@@ -4,15 +4,13 @@ namespace FM\SearchBundle\Mapping;
 
 use Solarium\Core\Query\Helper;
 use Solarium\QueryType\Select\Query\FilterQuery;
-
-use FM\SearchBundle\Mapping\Config;
 use FM\SearchBundle\Mapping\Filter\Type;
 
 class Filter
 {
     private $operators = array(
         'AND',
-        'OR'
+        'OR',
     );
 
     private $name;
@@ -42,7 +40,7 @@ class Filter
     }
 
     /**
-     * @param  array  $config
+     * @param array $config
      */
     protected function init(array $config)
     {
@@ -56,7 +54,6 @@ class Filter
             $choices = $this->config->get('choices');
 
             if (!empty($choices)) {
-
                 $this->choices = $choices;
 
                 // if array values are all numeric, assume a non-associative array
@@ -113,7 +110,7 @@ class Filter
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function setConfigValue($name, $value)
     {
@@ -121,8 +118,10 @@ class Filter
     }
 
     /**
-     * @param  string $name
+     * @param string $name
+     *
      * @return mixed
+     *
      * @throws \OutOfBoundsException If config does not have a value by this name
      */
     public function getConfigValue($name)
@@ -151,7 +150,7 @@ class Filter
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function hasChoices()
     {
@@ -199,14 +198,14 @@ class Filter
      * Renders the label for a choice. You can set `choice_label` in the filter
      * config to use a closure, if you want to apply custom logic for this.
      *
-     * @param  string $value   The choice value
-     * @param  string $default The default label for the choice
+     * @param string $value   The choice value
+     * @param string $default The default label for the choice
+     *
      * @return string
      */
     public function getChoiceLabel($value, $default)
     {
         if ($this->config->has('choice_label')) {
-
             $callback = $this->config->get('choice_label');
 
             if (!($callback instanceof \Closure)) {
@@ -222,8 +221,9 @@ class Filter
     /**
      * Transforms choices into placeholders to be used in Solr queries.
      *
-     * @param  array       $choices
-     * @param  FilterQuery $query
+     * @param array       $choices
+     * @param FilterQuery $query
+     *
      * @return array
      */
     public function transformChoice($choice, FilterQuery $query)
@@ -238,7 +238,8 @@ class Filter
     }
 
     /**
-     * @param  mixed $value
+     * @param mixed $value
+     *
      * @return mixed
      */
     public function getChoice($value)
@@ -277,7 +278,7 @@ class Filter
         // Type is a non-predefined range, thus expecting an array for each
         // filter. But array is only 1 level deep, and we want to be able to
         // filter more than one range, so nest it 1 level deeper.
-        if (($this->type instanceof Type\Range) && !$this->type->isPredefined($this) && !is_array(current($value))) {
+        if (($this->type instanceof Type\RangeType) && !$this->type->isPredefined($this) && !is_array(current($value))) {
             $value = array($value);
         }
 
@@ -321,8 +322,9 @@ class Filter
      * Returns whether the untransformed value is valid for this filter. For
      * example: empty strings or arrays are not, whereas 0 is valid.
      *
-     * @param  mixed   $value
-     * @return boolean
+     * @param mixed $value
+     *
+     * @return bool
      */
     public function isValidValue($value)
     {
@@ -348,7 +350,8 @@ class Filter
      * Transforms value into a value that's appropriate for Solr, according to
      * the field type. Arrays are transformed recursively.
      *
-     * @param  mixed $value
+     * @param mixed $value
+     *
      * @return mixed
      */
     public function transformValue($value)
@@ -359,7 +362,6 @@ class Filter
             }
 
             return $value;
-
         } else {
             return $this->field->getType()->convertToSolrValue($value);
         }
