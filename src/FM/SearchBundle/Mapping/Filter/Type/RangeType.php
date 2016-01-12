@@ -48,7 +48,7 @@ use FM\SearchBundle\Mapping\Filter\Type;
  *    This filter always has to submit two values.
  *
  */
-class Range implements Type
+class RangeType implements Type
 {
     public function isMultiValued()
     {

@@ -7,7 +7,7 @@ use Solarium\QueryType\Select\Query\Query;
 use FM\SearchBundle\Mapping\Facet;
 use FM\SearchBundle\Mapping\Facet\Type;
 
-class Field implements Type
+class FieldType implements Type
 {
     public function create(Facet $facet, Query $query)
     {

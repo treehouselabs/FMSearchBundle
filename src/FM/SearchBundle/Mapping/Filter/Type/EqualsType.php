@@ -5,7 +5,7 @@ namespace FM\SearchBundle\Mapping\Filter\Type;
 use FM\SearchBundle\Mapping\Filter;
 use FM\SearchBundle\Mapping\Filter\Type;
 
-class Equals implements Type
+class EqualsType implements Type
 {
     public function isMultiValued()
     {

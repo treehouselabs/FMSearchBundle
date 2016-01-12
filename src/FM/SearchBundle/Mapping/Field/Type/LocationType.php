@@ -4,7 +4,7 @@ namespace FM\SearchBundle\Mapping\Field\Type;
 
 use FM\SearchBundle\Mapping\Field\Type;
 
-class Location implements Type
+class LocationType implements Type
 {
     public function convertToPhpValue($value)
     {

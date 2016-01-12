@@ -4,7 +4,7 @@ namespace FM\SearchBundle\Mapping\Field\Type;
 
 use FM\SearchBundle\Mapping\Field\Type;
 
-class Date implements Type
+class DateTimeType implements Type
 {
     public function getDateTimeFormatString()
     {

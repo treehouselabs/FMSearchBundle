@@ -19,21 +19,21 @@ class Registry
 
     private $mapping = array(
         'field'    => array(
-            FieldType::STRING   => '\FM\SearchBundle\Mapping\Field\Type\String',
-            FieldType::TEXT     => '\FM\SearchBundle\Mapping\Field\Type\Text',
-            FieldType::BOOLEAN  => '\FM\SearchBundle\Mapping\Field\Type\Boolean',
-            FieldType::INTEGER  => '\FM\SearchBundle\Mapping\Field\Type\Integer',
-            FieldType::FLOAT    => '\FM\SearchBundle\Mapping\Field\Type\Float',
-            FieldType::DATETIME => '\FM\SearchBundle\Mapping\Field\Type\DateTime',
-            FieldType::LOCATION => '\FM\SearchBundle\Mapping\Field\Type\Location'
+            FieldType::STRING   => '\FM\SearchBundle\Mapping\Field\Type\StringType',
+            FieldType::TEXT     => '\FM\SearchBundle\Mapping\Field\Type\TextType',
+            FieldType::BOOLEAN  => '\FM\SearchBundle\Mapping\Field\Type\BooleanType',
+            FieldType::INTEGER  => '\FM\SearchBundle\Mapping\Field\Type\IntegerType',
+            FieldType::FLOAT    => '\FM\SearchBundle\Mapping\Field\Type\FloatType',
+            FieldType::DATETIME => '\FM\SearchBundle\Mapping\Field\Type\DateTimeType',
+            FieldType::LOCATION => '\FM\SearchBundle\Mapping\Field\Type\LocationType'
         ),
         'filter'   => array(
-            FilterType::EQUALS  => '\FM\SearchBundle\Mapping\Filter\Type\Equals',
-            FilterType::RANGE   => '\FM\SearchBundle\Mapping\Filter\Type\Range'
+            FilterType::EQUALS  => '\FM\SearchBundle\Mapping\Filter\Type\EqualsType',
+            FilterType::RANGE   => '\FM\SearchBundle\Mapping\Filter\Type\RangeType'
         ),
         'facet'    => array(
-            FacetType::FIELD    => '\FM\SearchBundle\Mapping\Facet\Type\Field',
-            FacetType::RANGE    => '\FM\SearchBundle\Mapping\Facet\Type\Range'
+            FacetType::FIELD    => '\FM\SearchBundle\Mapping\Facet\Type\FieldType',
+            FacetType::RANGE    => '\FM\SearchBundle\Mapping\Facet\Type\RangeType'
         ),
         'accessor' => array(
             AccessorType::GRAPH => '\Symfony\Component\PropertyAccess\PropertyAccessor',
@@ -97,7 +97,8 @@ class Registry
                 throw new \InvalidArgumentException(sprintf('Unknown %s type "%s"', $registry, $name));
             }
 
-            $this->typeObjects[$registry][$name] = new $this->mapping[$registry][$name]();
+            $class = $this->mapping[$registry][$name];
+            $this->typeObjects[$registry][$name] = new $class();
         }
 
         return $this->typeObjects[$registry][$name];
