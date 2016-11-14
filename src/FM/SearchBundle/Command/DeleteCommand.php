@@ -2,14 +2,13 @@
 
 namespace FM\SearchBundle\Command;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use PK\CommandExtraBundle\Command\Command as CommandExtra;
-
-class DeleteCommand extends CommandExtra
+class DeleteCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -21,9 +20,8 @@ class DeleteCommand extends CommandExtra
                     new InputArgument('entity', InputArgument::REQUIRED, 'The entity to delete. Can be any form that the entitymanager accepts.'),
                     new InputOption('where', null, InputOption::VALUE_OPTIONAL, 'Optional where clause to use in DQL (use "x" as root alias)'),
                 ]
-            );
-
-        $this->disableLoggers();
+            )
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -38,8 +36,8 @@ class DeleteCommand extends CommandExtra
 
     protected function delete($entity, $where = null, OutputInterface $output)
     {
-        $em      = $this->getEntityManager();
-        $manager = $this->get('fm_search.document_manager');
+        $em      = $this->getContainer()->get('doctrine')->getManager();
+        $manager = $this->getContainer()->get('fm_search.document_manager');
 
         $i         = 0;
         $batchSize = 50;

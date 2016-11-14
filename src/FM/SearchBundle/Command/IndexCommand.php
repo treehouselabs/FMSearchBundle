@@ -2,13 +2,13 @@
 
 namespace FM\SearchBundle\Command;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use PK\CommandExtraBundle\Command\Command as CommandExtra;
 
-class IndexCommand extends CommandExtra
+class IndexCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -25,9 +25,8 @@ class IndexCommand extends CommandExtra
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Optional where clause to use in DQL (use "x" as root alias).'
-            );
-
-        $this->disableLoggers();
+            )
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -42,8 +41,8 @@ class IndexCommand extends CommandExtra
 
     protected function index(array $entities, $where = null, OutputInterface $output)
     {
-        $em      = $this->getEntityManager();
-        $manager = $this->get('fm_search.document_manager');
+        $em      = $this->getContainer()->get('doctrine')->getManager();
+        $manager = $this->getContainer()->get('fm_search.document_manager');
 
         $i         = 0;
         $batchSize = 50;

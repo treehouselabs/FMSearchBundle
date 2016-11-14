@@ -2,12 +2,12 @@
 
 namespace FM\SearchBundle\Command;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use PK\CommandExtraBundle\Command\Command as CommandExtra;
 
-class CleanupCommand extends CommandExtra
+class CleanupCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -15,7 +15,6 @@ class CleanupCommand extends CommandExtra
             ->setName('search:cleanup')
             ->setDescription('Cleans up Solr index by removing any documents that does not exist in the database.')
             ->addArgument('entity', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'The entit[y|ies] to clean up. Can be any form that the entitymanager accepts.')
-            ->isSingleProcessed()
         ;
     }
 
@@ -34,8 +33,8 @@ class CleanupCommand extends CommandExtra
      */
     protected function cleanup(array $entities = array(), OutputInterface $output)
     {
-        $em = $this->getEntityManager();
-        $dm = $this->get('fm_search.document_manager');
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $dm = $this->getContainer()->get('fm_search.document_manager');
 
         $client = $dm->getClient();
 

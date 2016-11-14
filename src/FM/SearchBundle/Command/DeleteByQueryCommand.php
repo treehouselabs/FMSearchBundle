@@ -2,13 +2,12 @@
 
 namespace FM\SearchBundle\Command;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use PK\CommandExtraBundle\Command\Command as CommandExtra;
-
-class DeleteByQueryCommand extends CommandExtra
+class DeleteByQueryCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -34,7 +33,7 @@ class DeleteByQueryCommand extends CommandExtra
 
     protected function delete($query, $schema, OutputInterface $output)
     {
-        $manager = $this->get('fm_search.document_manager');
+        $manager = $this->getContainer()->get('fm_search.document_manager');
         $manager->removeByQuery($schema, $query, true);
 
         $output->writeln(sprintf(
