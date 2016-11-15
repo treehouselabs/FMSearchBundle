@@ -6,9 +6,9 @@ use FM\SearchBundle\Event\CommitEvent;
 use FM\SearchBundle\Event\UpdateEvent;
 use FM\SearchBundle\Mapping\Field\Type\LocationType;
 use FM\SearchBundle\Repository\DocumentRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Solarium\Client;
 use FM\SearchBundle\Event\SearchEvents;
 use FM\SearchBundle\Event\PersistEvent;
@@ -45,10 +45,9 @@ class DocumentManager
     );
 
     /**
-     * Constructor.
-     *
      * @param Client          $client
      * @param SchemaFactory   $schemaFactory
+     * @param SearchFactory   $searchFactory
      * @param LoggerInterface $logger
      */
     public function __construct(Client $client, SchemaFactory $schemaFactory, SearchFactory $searchFactory, LoggerInterface $logger)
@@ -439,7 +438,7 @@ class DocumentManager
         }
 
         if ($this->logger) {
-            $this->logger->addInfo(sprintf('Removed document "%s"', $id));
+            $this->logger->info(sprintf('Removed document "%s"', $id));
         }
     }
 
@@ -558,7 +557,7 @@ class DocumentManager
         $this->persist($document);
 
         if ($this->logger) {
-            $this->logger->addInfo(sprintf('Indexed document "%s"', $document));
+            $this->logger->info(sprintf('Indexed document "%s"', $document));
         }
 
         if ($andCommit) {

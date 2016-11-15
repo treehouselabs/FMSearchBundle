@@ -2,7 +2,7 @@
 
 namespace FM\SearchBundle\Search;
 
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Base class for search types. If you want to create a simple search, you can
@@ -38,7 +38,7 @@ abstract class AbstractType implements SearchTypeInterface
     {
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
     }
 }

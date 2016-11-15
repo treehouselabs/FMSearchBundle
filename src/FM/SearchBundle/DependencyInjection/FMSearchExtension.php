@@ -61,7 +61,7 @@ class FMSearchExtension extends Extension
 
     protected function getBundleEntityDir(\ReflectionClass $bundle)
     {
-        return sprintf('%s/%s', dirname($bundle->getFilename()), 'Entity');
+        return sprintf('%s/%s', dirname($bundle->getFileName()), 'Entity');
     }
 
     protected function loadSolariumClient(array $config, ContainerBuilder $container)

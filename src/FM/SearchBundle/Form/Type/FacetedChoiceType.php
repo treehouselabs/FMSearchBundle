@@ -5,21 +5,34 @@ namespace FM\SearchBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use FM\SearchBundle\Mapping\Facet;
 
 class FacetedChoiceType extends AbstractType
 {
+    /**
+     * @inheritdoc
+     */
     public function getParent()
     {
         return 'choice';
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'faceted_choice';
     }
 
+    /**
+     * @param Facet $facet
+     * @param       $facetResult
+     * @param       $choice
+     *
+     * @return int
+     */
     protected function getChoiceCount(Facet $facet, $facetResult, $choice)
     {
         if ($facet->getCountType() === Facet::COUNT_TYPE_EXACT) {
@@ -57,6 +70,9 @@ class FacetedChoiceType extends AbstractType
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $facet = $options['facet'];
@@ -79,15 +95,16 @@ class FacetedChoiceType extends AbstractType
         }
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    /**
+     * @inheritdoc
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setRequired(array(
             'facet',
             'facet_result',
         ));
 
-        $resolver->setAllowedTypes(array(
-            'facet' => 'FM\SearchBundle\Mapping\Facet',
-        ));
+        $resolver->setAllowedTypes('facet', [Facet::class]);
     }
 }

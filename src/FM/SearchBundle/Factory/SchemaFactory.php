@@ -76,7 +76,7 @@ class SchemaFactory
                 $reflClass = new \ReflectionClass($class);
 
                 // add class to resources
-                $resources[] = new FileResource($reflClass->getFilename());
+                $resources[] = new FileResource($reflClass->getFileName());
 
                 if ($annotation = $this->builder->getSchemaAnnotation($reflClass)) {
 
@@ -95,7 +95,7 @@ class SchemaFactory
                             $pass->build($schema, $this->builder);
 
                             $reflPass = new \ReflectionClass($pass);
-                            $resources[] = new FileResource($reflPass->getFilename());
+                            $resources[] = new FileResource($reflPass->getFileName());
                         }
                     }
 

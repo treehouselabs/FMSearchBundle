@@ -4,10 +4,7 @@ namespace FM\SearchBundle\Search;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use FM\SearchBundle\Mapping\Registry;
-use FM\SearchBundle\Mapping\Field;
 use FM\SearchBundle\Mapping\Schema;
 
 class SearchFactory
@@ -23,7 +20,7 @@ class SearchFactory
     {
         // resolve options
         $resolver = new OptionsResolver();
-        $this->setDefaultOptions($resolver);
+        $this->configureOptions($resolver);
         $this->setOptional($resolver);
         $type->setDefaultOptions($resolver);
         $options = $resolver->resolve($options);
@@ -40,15 +37,15 @@ class SearchFactory
         return new SearchBuilder($registry, $schema, $options, new EventDispatcher());
     }
 
-    protected function setDefaultOptions(OptionsResolverInterface $resolver)
+    protected function configureOptions(OptionsResolver $resolver)
     {
     }
 
-    protected function setOptional(OptionsResolverInterface $resolver)
+    protected function setOptional(OptionsResolver $resolver)
     {
-        $resolver->setOptional(array(
+        $resolver->setDefined(array(
             'field',
-            'values'
+            'values',
         ));
     }
 }

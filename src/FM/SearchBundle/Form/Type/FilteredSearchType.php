@@ -4,14 +4,12 @@ namespace FM\SearchBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use FM\SearchBundle\Form\Exception;
 use FM\SearchBundle\Mapping\Filter;
 use FM\SearchBundle\Mapping\Field\Type as FieldType;
-use FM\SearchBundle\Mapping\Facet;
 use FM\SearchBundle\Mapping\Facet\Type as FacetType;
 use FM\SearchBundle\Search\Search;
-use FM\SearchBundle\Search\Query\Result;
 
 class FilteredSearchType extends AbstractType
 {
@@ -321,7 +319,7 @@ class FilteredSearchType extends AbstractType
         return $choices;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'csrf_protection' => false,
@@ -333,7 +331,7 @@ class FilteredSearchType extends AbstractType
             'search',
         ));
 
-        $resolver->setOptional(array(
+        $resolver->setDefined(array(
             'result',
         ));
     }

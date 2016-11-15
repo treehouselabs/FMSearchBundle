@@ -4,7 +4,7 @@ namespace FM\SearchBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RangeType extends AbstractType
 {
@@ -17,13 +17,13 @@ class RangeType extends AbstractType
 
         $startOptions = array_merge(
             $defaultOptions,
-            array('label' => $options['label'] . '_start'),
+            array('label' => $options['label'].'_start'),
             $options['start_options']
         );
 
         $endOptions = array_merge(
             $defaultOptions,
-            array('label' => $options['label'] . '_end'),
+            array('label' => $options['label'].'_end'),
             $options['end_options']
         );
 
@@ -31,21 +31,19 @@ class RangeType extends AbstractType
         $builder->add('end', $options['type'], $endOptions);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'type' => 'choice',
             'start_options' => array(),
             'end_options' => array(),
             'compound' => true,
-            'empty_value' => 'Choose a value'
+            'empty_value' => 'Choose a value',
         ));
 
-        $resolver->setAllowedTypes(array(
-            'type' => array('string'),
-            'start_options' => array('array'),
-            'end_options' => array('array')
-        ));
+        $resolver->setAllowedTypes('type', array('string'));
+        $resolver->setAllowedTypes('start_options', array('array'));
+        $resolver->setAllowedTypes('end_options', array('array'));
     }
 
     public function getParent()
