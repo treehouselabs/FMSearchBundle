@@ -22,7 +22,7 @@ class SearchFactory
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
         $this->setOptional($resolver);
-        $type->setDefaultOptions($resolver);
+        $type->configureOptions($resolver);
         $options = $resolver->resolve($options);
 
         // create new builder and build the search

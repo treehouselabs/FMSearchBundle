@@ -127,7 +127,7 @@ EOF
             $cache->write($content, $resources);
 
         } else {
-            list($schemas, $classes) = include $cache;
+            list($schemas, $classes) = include $cache->getPath();
 
             $this->schemas = $this->builder->unserializeSchemas($schemas);
             $this->classes = unserialize($classes);
