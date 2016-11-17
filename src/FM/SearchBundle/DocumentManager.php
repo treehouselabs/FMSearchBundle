@@ -375,11 +375,11 @@ class DocumentManager
                 $documents = array_values($this->dirtyMap[$schemaName]);
 
                 foreach ($documents as $document) {
+                    $update->addDocument($document->getDocument());
+
                     $event = new UpdateEvent($document, $this);
                     $this->eventDispatcher->dispatch(SearchEvents::PRE_UPDATE, $event);
                 }
-
-                $update->addDocuments($documents);
             }
 
             if (array_key_exists($schemaName, $this->updates)) {
