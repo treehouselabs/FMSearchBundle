@@ -244,7 +244,7 @@ class FilteredSearchType extends AbstractType
     protected function getRangeFilterConfig(Filter $filter, array $options)
     {
         $expanded = $this->getExpanded($filter);
-        $choices = $this->getChoices($filter);
+        $choices = $filter->getChoices();
 
         if (empty($choices) && !$this->allowEmptyChoices($filter)) {
             throw new NoChoicesException();
@@ -332,11 +332,6 @@ class FilteredSearchType extends AbstractType
             throw new NoChoicesException();
         }
 
-        // empty value for radio buttons
-        if (($expanded === true) && ($multiple === false)) {
-            $choices[''] = 'empty_value_label';
-        }
-
         $config = [
             'child' => $filter->getName(),
             'type' => ChoiceType::class,
@@ -350,16 +345,21 @@ class FilteredSearchType extends AbstractType
             ],
         ];
 
-        // set facet options
-        if ($counts !== null) {
-            $config['type'] = isset($options['type']) ? $options['type'] : FacetedChoiceType::class;
-            $config['options']['facet'] = $facet;
-            $config['options']['facet_result'] = $counts;
+        // empty value for radio buttons
+        if (($expanded === true) && ($multiple === false)) {
+            $config['options']['placeholder'] = 'empty_value_label';
         }
 
         // set empty value for selects
         if (($expanded === false) && ($multiple === false)) {
             $config['options']['empty_value'] = 'empty_value_label';
+        }
+
+        // set facet options
+        if ($counts !== null) {
+            $config['type'] = isset($options['type']) ? $options['type'] : FacetedChoiceType::class;
+            $config['options']['facet'] = $facet;
+            $config['options']['facet_result'] = $counts;
         }
 
         return $config;
@@ -377,16 +377,19 @@ class FilteredSearchType extends AbstractType
 
     /**
      * @param Filter $filter
-     * @param        $choices
+     * @param array  $choices
      *
-     * @return mixed
+     * @return array
      */
     protected function getTranslatedChoices(Filter $filter, $choices)
     {
-        foreach ($choices as $value => &$label) {
+        $translated = [];
+
+        foreach ($choices as $value => $label) {
             $label = $filter->getChoiceLabel($value, $label);
+            $translated[$label] = $value;
         }
 
-        return $choices;
+        return $translated;
     }
 }

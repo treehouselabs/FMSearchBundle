@@ -286,6 +286,7 @@ class DocumentManager
             if (is_object($class)) {
                 $class = get_class($class);
             }
+
             $this->getSchema($class);
 
             return true;
