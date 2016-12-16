@@ -196,7 +196,7 @@ class SearchTranslator
     {
         $placeholders = $this->getPlaceholders($values);
 
-        if ($text instanceof \Twig_Template) {
+        if ($text instanceof \Twig_TemplateWrapper) {
             return $text->render($placeholders);
         } else {
             return $this->twig->render($text, $placeholders);
